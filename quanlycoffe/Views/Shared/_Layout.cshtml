@@ -1,0 +1,107 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - PRO COFFEE MANAGEMENT</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+
+<style>
+    /* 1. Header chính màu nâu - Cố định trên cùng */
+    .navbar-main {
+        background-color: #3e2723;
+        border: none;
+        margin-bottom: 0 !important;
+        border-radius: 0;
+        min-height: 50px;
+        position: fixed; /* Cố định */
+        top: 0;
+        width: 100%;
+        z-index: 1001; /* Chỉ số cao nhất để nằm trên cùng */
+    }
+
+        .navbar-main .navbar-brand {
+            color: #fff !important;
+            font-weight: bold;
+            font-size: 22px;
+        }
+
+    /* 2. Thanh 8 mục sát lề TRÁI - Cố định ngay dưới Header */
+    .sub-header {
+        background-color: #efebe9;
+        border-bottom: 2px solid #d7ccc8;
+        position: fixed; /* Cố định */
+        top: 50px; /* Nằm ngay dưới sát Header (cao 50px) */
+        width: 100%;
+        z-index: 1000; /* Nằm dưới Header một chút */
+    }
+
+    .sub-menu {
+        display: flex;
+        justify-content: flex-start; /* Sát lề trái theo ý bạn */
+        list-style: none;
+        padding: 0 10px;
+        margin: 0;
+    }
+
+        .sub-menu li a {
+            color: #5d4037;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 15px 12px;
+            display: block;
+            font-size: 11px;
+            text-transform: uppercase;
+        }
+
+            .sub-menu li a:hover {
+                background-color: #d7ccc8;
+                color: #3e2723;
+            }
+
+    /* 3. Đẩy nội dung xuống để không bị menu che mất */
+    .body-content {
+        margin-top: 110px; /* Tổng chiều cao của 2 thanh menu */
+        padding-bottom: 30px;
+    }
+</style>
+</head>
+<body>
+    <nav class="navbar navbar-main navbar-fixed-top">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                @Html.ActionLink("☕ PRO COFFEE", "Index", "Home", null, new { @class = "navbar-brand" })
+            </div>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="#"><span class="glyphicon glyphicon-user"></span> Admin Phát</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="sub-header">
+        <div class="container-fluid">
+            <ul class="sub-menu">
+                <li>@Html.ActionLink("TỔNG QUAN", "Index", "Home")</li>
+                <li>@Html.ActionLink("BÁN HÀNG", "Index", "POS")</li>
+                <li>@Html.ActionLink("HÀNG HÓA", "Index", "SanPham")</li>
+                <li>@Html.ActionLink("KHÁCH HÀNG", "Index", "KhachHang")</li>
+                <li>@Html.ActionLink("MARKETING", "Index", "KhuyenMai")</li>
+                <li>@Html.ActionLink("ĐỐI TÁC", "Index", "NhaCungCap")</li>
+                <li>@Html.ActionLink("NHÂN SỰ", "Index", "NhanVien")</li>
+                <li>@Html.ActionLink("HỆ THỐNG", "Index", "HeThong")</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="container body-content">
+        @RenderBody()
+        <footer class="text-center">
+            <p>&copy; @DateTime.Now.Year - Quản Lý Cafe - Phát & Team</p>
+        </footer>
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+</body>
+</html>

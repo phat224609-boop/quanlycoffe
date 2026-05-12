@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="8ca804ffa29e4ef7afeb784134d1bcf9" Name="Diagram1">
+        <EntityTypeShape EntityType="BMSModel_DB.CTHoaDonBH" Width="1.5" PointX="7.5" PointY="3.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="BMSModel_DB.DanhMuc" Width="1.5" PointX="3" PointY="24.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="BMSModel_DB.HoaDonBH" Width="1.5" PointX="5.25" PointY="2.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="BMSModel_DB.KhachHang" Width="1.5" PointX="3" PointY="3" IsExpanded="true" />
+        <EntityTypeShape EntityType="BMSModel_DB.NhaCungCap" Width="1.5" PointX="3" PointY="26.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="BMSModel_DB.NhanVien" Width="1.5" PointX="3" PointY="10.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="BMSModel_DB.plp_Ban" Width="1.5" PointX="3" PointY="14.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="BMSModel_DB.plp_DVT" Width="1.5" PointX="5.75" PointY="8.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="BMSModel_DB.plp_HangThanhVien" Width="1.5" PointX="0.75" PointY="3.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="BMSModel_DB.plp_KhuVuc" Width="1.5" PointX="0.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BMSModel_DB.plp_KhuVuc_Ban" Width="1.5" PointX="0.75" PointY="14.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BMSModel_DB.plp_KhuyenMai" Width="1.5" PointX="3" PointY="17.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="BMSModel_DB.plp_LoginUser" Width="1.5" PointX="3" PointY="20.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="BMSModel_DB.plp_NghiepVu" Width="1.5" PointX="0.75" PointY="11" IsExpanded="true" />
+        <EntityTypeShape EntityType="BMSModel_DB.plp_NhomKH" Width="1.5" PointX="0.75" PointY="7.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="BMSModel_DB.SanPham" Width="1.5" PointX="5.25" PointY="24.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="BMSModel_DB.sysdiagrams" Width="1.5" PointX="7.75" PointY="8.125" IsExpanded="true" />
+        <AssociationConnector Association="BMSModel_DB.FK_CTHoaDonBH_HoaDonBH" ManuallyRouted="false" />
+        <AssociationConnector Association="BMSModel_DB.FK_CTHoaDonBH_SanPham" ManuallyRouted="false" />
+        <AssociationConnector Association="BMSModel_DB.FK_Products_Categories" ManuallyRouted="false" />
+        <AssociationConnector Association="BMSModel_DB.FK_HoaDon_Ban" ManuallyRouted="false" />
+        <AssociationConnector Association="BMSModel_DB.FK_HoaDon_KM" ManuallyRouted="false" />
+        <AssociationConnector Association="BMSModel_DB.FK_HoaDonBH_KhachHang" ManuallyRouted="false" />
+        <AssociationConnector Association="BMSModel_DB.FK_HoaDonBH_NhanVien" ManuallyRouted="false" />
+        <AssociationConnector Association="BMSModel_DB.FK_HoaDonBH_plp_LoginUser" ManuallyRouted="false" />
+        <AssociationConnector Association="BMSModel_DB.FK_KhachHang_Hang" ManuallyRouted="false" />
+        <AssociationConnector Association="BMSModel_DB.FK_KhachHang_plp_KhuVuc" ManuallyRouted="false" />
+        <AssociationConnector Association="BMSModel_DB.FK_KhachHang_plp_NhomKH" ManuallyRouted="false" />
+        <AssociationConnector Association="BMSModel_DB.FK_Products_Suppliers" ManuallyRouted="false" />
+        <AssociationConnector Association="BMSModel_DB.FK_NhanVien_plp_NghiepVu" ManuallyRouted="false" />
+        <AssociationConnector Association="BMSModel_DB.FK_plp_LoginUser_NhanVien" ManuallyRouted="false" />
+        <AssociationConnector Association="BMSModel_DB.FK_Ban_KhuVuc" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

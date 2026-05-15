@@ -1,0 +1,65 @@
+﻿@model IEnumerable<quanlycoffe.Models.NhanVien>
+<div class="panel panel-default">
+    <div class="panel-heading" style="background-color: #5d4037; color: white;">
+        <h3 class="panel-title">DANH SÁCH NHÂN VIÊN</h3>
+    </div>
+    <div class="panel-body">
+        @if (Session["Quyen"] != null && Session["Quyen"].ToString() == "Admin")
+        {
+            <p>@Html.ActionLink("➕ Thêm Nhân Viên", "Create", null, new { @class = "btn btn-success" })</p>
+        }
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr style="background-color: #efebe9;">
+                <th>Mã NV</th>
+                <th>Tên Nhân Viên</th>
+                <th>Giới Tính</th>
+                <th>Ngày Sinh</th>
+                <th>Điện Thoại</th>
+                <th>Địa Chỉ</th>
+                <th>Email Hệ Thống</th> @* Cột Email riêng biệt *@
+                <th>Mức Lương</th>
+                <th>Nghiệp Vụ</th>
+                <th>Trạng Thái</th>
+                <th>Thao Tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                // Lấy Dictionary Email từ ViewBag ra để tra cứu
+                var emails = ViewBag.DanhSachEmail as Dictionary<int, string>;
+                string emailHienTai = "Chưa cập nhật";
+
+                if (emails != null && emails.ContainsKey(item.MaNV))
+                {
+                    emailHienTai = emails[item.MaNV];
+                }
+
+                <tr>
+                    <td>@item.MaNV</td>
+                    <td>@item.TenNV</td>
+                    <td>@item.GioiTinh</td>
+                    <td>@item.Ngaysinh.ToString("dd/MM/yyyy")</td>
+                    <td>@item.DienThoai</td>
+                    <td>@item.DiaChi</td>
+
+                    @* Hiển thị Email thật tra cứu từ bảng tài khoản *@
+                    <td style="color: #2980b9; font-weight: bold;">@emailHienTai</td>
+
+                    <td>@(item.LuongNV.HasValue ? item.LuongNV.Value.ToString("N0") : "0") Đ</td>
+                    <td>@(item.plp_NghiepVu != null ? item.plp_NghiepVu.TenNghiepVu : "Chưa phân công")</td>
+                    <td>@item.TrangThai</td>
+                    <td>
+                        @if (Session["Quyen"] != null && Session["Quyen"].ToString() == "Admin")
+                        {
+                            <a href="@Url.Action("Edit", new { id = item.MaNV })" class="btn btn-xs btn-warning">Sửa</a>
+                            <a href="@Url.Action("Delete", new { id = item.MaNV })" class="btn btn-xs btn-danger" onclick="return confirm('Xóa nhân viên này?')">Xóa</a>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    </div>
+</div>

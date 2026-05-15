@@ -1,0 +1,44 @@
+﻿@model IEnumerable<quanlycoffe.Models.plp_LoginUser>
+@{ ViewBag.Title = "Quản Lý Tài Khoản Hệ Thống"; }
+
+<div class="panel panel-default" style="max-width: 1000px; margin: 20px auto;">
+    <div class="panel-heading" style="background-color: #2c3e50; color: white;">
+        <h3 class="panel-title">🔑 DANH SÁCH TÀI KHOẢN ĐĂNG NHẬP HỆ THỐNG</h3>
+    </div>
+    <div class="panel-body">
+        <table class="table table-bordered table-hover">
+            <thead>
+                <tr style="background-color: #efebe9;">
+                    <th>Tên Đăng Nhập (Login Name)</th>
+                    <th>Mật Khẩu (Đã mã hóa/Mặc định)</th>
+                    <th>Chủ Sở Hữu (Nhân Viên)</th>
+                    <th>Email Hệ Thống</th>
+                    <th>Quyền Hạn</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td style="font-weight: bold; color: #e67e22;">@item.Login_Name</td>
+                        <td><code>@item.PW_matkhau</code></td>
+                        <td>
+                            @(item.NhanVien != null ? item.NhanVien.TenNV + " (Mã: " + item.MaNV + ")" : "Tài khoản hệ thống/Admin")
+                        </td>
+                        <td style="color: #2980b9;">@item.Email</td>
+                        <td>
+                            @if (item.Quyen == "Admin")
+                            {
+                                <span class="label label-danger">Admin</span>
+                            }
+                            else
+                            {
+                                <span class="label label-info">Nhân viên (User)</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

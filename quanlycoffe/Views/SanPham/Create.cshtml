@@ -1,0 +1,98 @@
+﻿@model quanlycoffe.Models.SanPham
+@{
+    ViewBag.Title = "Thêm Sản Phẩm Mới";
+}
+
+<div class="panel panel-default" style="max-width: 750px; margin: 20px auto; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+    <div class="panel-heading" style="background-color: #27ae60; color: white; padding: 12px 20px;">
+        <h3 class="panel-title" style="font-weight: bold; font-size: 16px;">➕ THÊM MỚI SẢN PHẨM / HÀNG HÓA</h3>
+    </div>
+    <div class="panel-body" style="padding: 20px;">
+        @using (Html.BeginForm())
+        {
+            @Html.AntiForgeryToken()
+            <div class="form-horizontal">
+
+                @* 1. Mã Sản Phẩm *@
+                <div class="form-group">
+                    <label class="control-label col-md-3" style="font-weight: bold;">Mã Sản Phẩm:</label>
+                    <div class="col-md-9">
+                        @Html.EditorFor(model => model.MaSP, new { htmlAttributes = new { @class = "form-control", required = "required", placeholder = "Ví dụ: SP001, CF01..." } })
+                    </div>
+                </div>
+
+                @* 2. Tên Sản Phẩm *@
+                <div class="form-group">
+                    <label class="control-label col-md-3" style="font-weight: bold;">Tên Sản Phẩm:</label>
+                    <div class="col-md-9">
+                        @Html.EditorFor(model => model.TenSP, new { htmlAttributes = new { @class = "form-control", required = "required", placeholder = "Nhập tên đồ uống, món ăn..." } })
+                    </div>
+                </div>
+
+                @* 3. Danh Mục (Loại) *@
+                <div class="form-group">
+                    <label class="control-label col-md-3" style="font-weight: bold;">Loại / Danh Mục:</label>
+                    <div class="col-md-9">
+                        @Html.DropDownList("MaDM", null, htmlAttributes: new { @class = "form-control" })
+                    </div>
+                </div>
+
+                @* 4. Nhà Cung Cấp *@
+                <div class="form-group">
+                    <label class="control-label col-md-3" style="font-weight: bold;">Nhà Cung Cấp:</label>
+                    <div class="col-md-9">
+                        @Html.DropDownList("MANCC", null, htmlAttributes: new { @class = "form-control" })
+                    </div>
+                </div>
+
+                @* 5. Giá Mua (Mục mới - Chặn số âm) *@
+                <div class="form-group">
+                    <label class="control-label col-md-3" style="font-weight: bold;">Giá Mua (VNĐ):</label>
+                    <div class="col-md-9">
+                        <input type="number" name="GiaMua" class="form-control" min="0" required value="0" placeholder="Giá vốn nhập kho" />
+                    </div>
+                </div>
+
+                @* 6. Giá Bán (Chặn số âm) *@
+                <div class="form-group">
+                    <label class="control-label col-md-3" style="font-weight: bold;">Giá Bán (VNĐ):</label>
+                    <div class="col-md-9">
+                        <input type="number" name="GiaBan" class="form-control" min="0" required value="0" placeholder="Giá bán trên menu" />
+                    </div>
+                </div>
+
+                @* 7. Số Lượng Trong Kho (Mục mới - Chặn số âm) *@
+                <div class="form-group">
+                    <label class="control-label col-md-3" style="font-weight: bold;">Số Lượng Kho:</label>
+                    <div class="col-md-9">
+                        <input type="number" name="SoLuongTrongKho" class="form-control" min="0" required value="100" placeholder="Nhập số lượng ban đầu" />
+                    </div>
+                </div>
+
+                @* 8. Đơn Vị Tính *@
+                <div class="form-group">
+                    <label class="control-label col-md-3" style="font-weight: bold;">Đơn Vị Tính:</label>
+                    <div class="col-md-9">
+                        @Html.EditorFor(model => model.DVT, new { htmlAttributes = new { @class = "form-control", required = "required", placeholder = "Ví dụ: Ly, Cái, Chai, Bịch..." } })
+                    </div>
+                </div>
+
+                @* 9. Hạn Dùng *@
+                <div class="form-group">
+                    <label class="control-label col-md-3" style="font-weight: bold;">Hạn Dùng:</label>
+                    <div class="col-md-9">
+                        @Html.EditorFor(model => model.HanDung, new { htmlAttributes = new { @class = "form-control", placeholder = "Ví dụ: Trong ngày, 3 tháng..." } })
+                    </div>
+                </div>
+
+                @* Nút thao tác *@
+                <div class="form-group" style="margin-top: 20px;">
+                    <div class="col-md-offset-3 col-md-9">
+                        <button type="submit" class="btn btn-success" style="font-weight: bold; padding: 6px 20px;">💾 Lưu Sản Phẩm</button>
+                        @Html.ActionLink("Hủy bỏ", "Index", null, new { @class = "btn btn-default", style = "margin-left: 5px;" })
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

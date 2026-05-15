@@ -1,0 +1,109 @@
+﻿@model quanlycoffe.Models.NhanVien
+@{ ViewBag.Title = "Thêm Mới Nhân Viên"; }
+
+<div class="panel panel-default" style="max-width: 800px; margin: 20px auto;">
+    <div class="panel-heading" style="background-color: #27ae60; color: white;">
+        <h3 class="panel-title">➕ THÊM MỚI NHÂN VIÊN XỊN</h3>
+    </div>
+    <div class="panel-body">
+        @using (Html.BeginForm())
+        {
+            @Html.AntiForgeryToken()
+            <div class="form-horizontal">
+
+                @* 1. Mã Nhân Viên (Chặn số âm) *@
+                <div class="form-group">
+                    <label class="control-label col-md-3">Mã Nhân Viên (Số):</label>
+                    <div class="col-md-9">
+                        <input type="number" name="MaNV" class="form-control" min="1" required placeholder="Ví dụ: 10, 11, 12..." />
+                    </div>
+                </div>
+
+                @* 2. Tên Nhân Viên *@
+                <div class="form-group">
+                    <label class="control-label col-md-3">Tên Nhân Viên:</label>
+                    <div class="col-md-9">
+                        @Html.EditorFor(model => model.TenNV, new { htmlAttributes = new { @class = "form-control", required = "required", placeholder = "Nhập họ và tên" } })
+                    </div>
+                </div>
+
+                @* 3. Giới Tính *@
+                <div class="form-group">
+                    <label class="control-label col-md-3">Giới Tính:</label>
+                    <div class="col-md-9">
+                        @Html.DropDownListFor(model => model.GioiTinh, new List<SelectListItem> {
+                            new SelectListItem { Text = "Nam", Value = "Nam" },
+                            new SelectListItem { Text = "Nữ", Value = "Nữ" }
+                        }, new { @class = "form-control" })
+                    </div>
+                </div>
+
+                @* 4. Ngày Sinh *@
+                <div class="form-group">
+                    <label class="control-label col-md-3">Ngày Sinh:</label>
+                    <div class="col-md-9">
+                        <input type="date" name="Ngaysinh" class="form-control" required value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                    </div>
+                </div>
+
+                @* 5. Số Điện Thoại *@
+                <div class="form-group">
+                    <label class="control-label col-md-3">Số Điện Thoại:</label>
+                    <div class="col-md-9">
+                        @Html.EditorFor(model => model.DienThoai, new { htmlAttributes = new { @class = "form-control", placeholder = "Nhập số điện thoại" } })
+                    </div>
+                </div>
+
+                @* 6. Địa Chỉ *@
+                <div class="form-group">
+                    <label class="control-label col-md-3">Địa Chỉ:</label>
+                    <div class="col-md-9">
+                        @Html.EditorFor(model => model.DiaChi, new { htmlAttributes = new { @class = "form-control", required = "required", placeholder = "Nhập địa chỉ tạm trú" } })
+                    </div>
+                </div>
+
+                @* 7. MỤC NHẬP GMAIL (MỚI) *@
+                <div class="form-group">
+                    <label class="control-label col-md-3">Email Hệ Thống:</label>
+                    <div class="col-md-9">
+                        <input type="email" name="EmailInput" class="form-control" required placeholder="vi_du@gmail.com" />
+                    </div>
+                </div>
+
+                @* 8. MỤC NHẬP LƯƠNG (MỚI - Chặn số âm) *@
+                <div class="form-group">
+                    <label class="control-label col-md-3">Mức Lương (VNĐ):</label>
+                    <div class="col-md-9">
+                        <input type="number" name="LuongNV" class="form-control" min="0" required placeholder="Ví dụ: 5000000" />
+                    </div>
+                </div>
+
+                @* 9. Nghiệp Vụ *@
+                <div class="form-group">
+                    <label class="control-label col-md-3">Bộ Phận / Nghiệp Vụ:</label>
+                    <div class="col-md-9">
+                        @Html.DropDownList("MaNghiepVu", null, htmlAttributes: new { @class = "form-control" })
+                    </div>
+                </div>
+
+                @* 10. Trạng Thái *@
+                <div class="form-group">
+                    <label class="control-label col-md-3">Trạng Thái:</label>
+                    <div class="col-md-9">
+                        @Html.DropDownListFor(model => model.TrangThai, new List<SelectListItem> {
+                            new SelectListItem { Text = "Đang làm việc", Value = "Đang làm việc" },
+                            new SelectListItem { Text = "Đã nghỉ", Value = "Đã nghỉ" }
+                        }, new { @class = "form-control" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-md-offset-3 col-md-9">
+                        <button type="submit" class="btn btn-success">➕ Tạo Mới Nhân Viên</button>
+                        @Html.ActionLink("Hủy bỏ", "Index", null, new { @class = "btn btn-default" })
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

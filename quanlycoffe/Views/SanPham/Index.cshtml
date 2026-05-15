@@ -1,0 +1,100 @@
+﻿@model IEnumerable<quanlycoffe.Models.SanPham>
+@{
+    ViewBag.Title = "Quản Lý Thực Đơn Hàng Hóa";
+}
+
+<div class="panel panel-default" style="margin: 20px auto; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+    <div class="panel-heading" style="background-color: #3e2723; color: white; display: flex; justify-content: space-between; align-items: center; padding: 12px 20px;">
+        <h3 class="panel-title" style="font-weight: bold; font-size: 16px;">☕ DANH SÁCH THỰC ĐƠN & SẢN PHẨM</h3>
+        @if (Session["Quyen"] != null && Session["Quyen"].ToString() == "Admin")
+        {
+            <a href="@Url.Action("Create", "SanPham")" class="btn btn-success btn-sm" style="font-weight: bold;">➕ Thêm Sản Phẩm Mới</a>
+        }
+    </div>
+
+    <div class="panel-body" style="padding: 15px;">
+        <table class="table table-bordered table-hover table-striped" style="margin-bottom: 0;">
+            <thead>
+                <tr style="background-color: #efebe9; color: #4e342e;">
+                    <th style="text-align: center; width: 90px;">Mã SP</th>
+                    <th>Tên Sản Phẩm / Món</th>
+                    <th style="text-align: right; width: 110px;">Giá Mua (Kho)</th>
+                    <th style="text-align: right; width: 110px;">Giá Bán (Menu)</th>
+                    <th style="text-align: center; width: 100px;">Tồn Kho</th>
+                    <th style="text-align: center; width: 80px;">ĐVT</th>
+                    <th style="text-align: center; width: 120px;">Hạn Dùng</th>
+                    <th style="text-align: center; width: 100px;">Trạng Thái</th>
+                    @if (Session["Quyen"] != null && Session["Quyen"].ToString() == "Admin")
+                    {
+                        <th style="text-align: center; width: 120px;">Thao Tác</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var item in Model)
+                    {
+                        <tr>
+                            <td style="text-align: center; font-weight: bold; color: #795548;">@item.MaSP</td>
+
+                            <td style="font-weight: bold; color: #2c3e50;">@item.TenSP</td>
+
+                            <td style="text-align: right; font-weight: bold; color: #7f8c8d;">
+                                @(item.GiaMua != null ? Convert.ToDecimal(item.GiaMua).ToString("N0") : "0") Đ
+                            </td>
+
+                            <td style="text-align: right; color: #e74c3c; font-weight: bold;">
+                                @(item.GiaBan != null ? Convert.ToDecimal(item.GiaBan).ToString("N0") : "0") Đ
+                            </td>
+
+                            <td style="text-align: center; font-weight: bold; color: #27ae60;">
+                                @(item.SoLuongTrongKho != null ? item.SoLuongTrongKho : 0)
+                            </td>
+
+                            <td style="text-align: center;">@item.DVT</td>
+
+                            <td style="text-align: center; color: #666;">
+                                @if (item.HanDung != null)
+                                {
+                                    @item.HanDung.ToString()
+                                }
+                                else
+                                {
+                                    <span>Không giới hạn</span>
+                                }
+                            </td>
+
+                            <td style="text-align: center;">
+                                @if (item.HetHang == true)
+                                {
+                                    <span class="label label-danger" style="padding: 4px 8px;">Hết hàng</span>
+                                }
+                                else
+                                {
+                                    <span class="label label-success" style="padding: 4px 8px;">Còn hàng</span>
+                                }
+                            </td>
+
+                            @if (Session["Quyen"] != null && Session["Quyen"].ToString() == "Admin")
+                            {
+                                <td style="text-align: center;">
+                                    <a href="@Url.Action("Edit", "SanPham", new { id = item.MaSP })" class="btn btn-xs btn-warning" style="margin-right: 2px;">Sửa</a>
+                                    <a href="@Url.Action("Delete", "SanPham", new { id = item.MaSP })" class="btn btn-xs btn-danger" onclick="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này không?')">Xóa</a>
+                                </td>
+                            }
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="@(Session["Quyen"] != null && Session["Quyen"].ToString() == "Admin" ? 9 : 8)" class="text-center" style="padding: 20px; color: #95a5a6; font-style: italic;">
+                            Danh sách thực đơn hiện đang trống. Vui lòng thêm sản phẩm mới!
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

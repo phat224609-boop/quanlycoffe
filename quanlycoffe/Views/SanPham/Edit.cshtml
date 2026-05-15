@@ -1,0 +1,99 @@
+﻿@model quanlycoffe.Models.SanPham
+@{ ViewBag.Title = "Chỉnh Sửa Sản Phẩm"; }
+
+<div class="panel panel-default" style="max-width: 750px; margin: 20px auto; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+    <div class="panel-heading" style="background-color: #f39c12; color: white;">
+        <h3 class="panel-title" style="font-weight: bold;">📝 CHỈNH SỬA THÔNG TIN SẢN PHẨM</h3>
+    </div>
+    <div class="panel-body">
+        @using (Html.BeginForm())
+        {
+            @Html.AntiForgeryToken()
+            <div class="form-horizontal">
+
+                @* Khóa chính MaSP ẩn đi và khóa cứng trên giao diện *@
+                @Html.HiddenFor(model => model.MaSP)
+                <div class="form-group">
+                    <label class="control-label col-md-3">Mã Sản Phẩm:</label>
+                    <div class="col-md-9">
+                        <input type="text" class="form-control" value="@Model.MaSP" disabled />
+                        <span class="text-danger" style="font-size: 12px;">* Không được phép sửa Mã sản phẩm</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-md-3">Tên Sản Phẩm:</label>
+                    <div class="col-md-9">
+                        @Html.EditorFor(model => model.TenSP, new { htmlAttributes = new { @class = "form-control", required = "required" } })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-md-3">Danh Mục (Loại):</label>
+                    <div class="col-md-9">
+                        @Html.DropDownList("MaDM", null, htmlAttributes: new { @class = "form-control" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-md-3">Nhà Cung Cấp:</label>
+                    <div class="col-md-9">
+                        @Html.DropDownList("MaNCC", null, htmlAttributes: new { @class = "form-control" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-md-3">Giá Mua (Kho):</label>
+                    <div class="col-md-9">
+                        @Html.EditorFor(model => model.GiaMua, new { htmlAttributes = new { @class = "form-control", type = "number", min = "0" } })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-md-3">Giá Bán (Menu):</label>
+                    <div class="col-md-9">
+                        @Html.EditorFor(model => model.GiaBan, new { htmlAttributes = new { @class = "form-control", type = "number", min = "0" } })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-md-3">Số Lượng Tồn Kho:</label>
+                    <div class="col-md-9">
+                        @Html.EditorFor(model => model.SoLuongTrongKho, new { htmlAttributes = new { @class = "form-control", type = "number", min = "0" } })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-md-3">Đơn Vị Tính (ĐVT):</label>
+                    <div class="col-md-9">
+                        @Html.EditorFor(model => model.DVT, new { htmlAttributes = new { @class = "form-control", required = "required" } })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-md-3">Trạng Thái Hàng:</label>
+                    <div class="col-md-9">
+                        @Html.DropDownListFor(model => model.HetHang, new List<SelectListItem> {
+                            new SelectListItem { Text = "Còn hàng kinh doanh", Value = "false" },
+                            new SelectListItem { Text = "Hết hàng / Tạm ngưng", Value = "true" }
+                        }, new { @class = "form-control" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-md-3">Ghi Chú:</label>
+                    <div class="col-md-9">
+                        @Html.EditorFor(model => model.GhiChu, new { htmlAttributes = new { @class = "form-control" } })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-md-offset-3 col-md-9">
+                        <button type="submit" class="btn btn-warning" style="font-weight: bold;">💾 Cập Nhật</button>
+                        @Html.ActionLink("Quay lại", "Index", null, new { @class = "btn btn-default" })
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

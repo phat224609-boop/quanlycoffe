@@ -25,6 +25,8 @@ namespace quanlycoffe.Models
         public string PW_matkhau { get; set; }
         public string TrangThai { get; set; }
         public Nullable<int> MaNV { get; set; }
+        public string Quyen { get; set; }
+        public string Email { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<HoaDonBH> HoaDonBH { get; set; }

@@ -1,0 +1,59 @@
+﻿@{
+    ViewBag.Title = "Đăng Nhập Hệ Thống";
+    Layout = null; // Trang đăng nhập không cần menu
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Đăng Nhập Quản Lý Cafe</title>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        body {
+            background-color: #efebe9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .login-box {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+
+            .login-box h3 {
+                text-align: center;
+                color: #5d4037;
+                font-weight: bold;
+                margin-bottom: 20px;
+            }
+    </style>
+</head>
+<body>
+    <div class="login-box">
+        <h3>ĐĂNG NHẬP HỆ THỐNG</h3>
+        @using (Html.BeginForm("Login", "Account", FormMethod.Post))
+        {
+            <div class="form-group">
+                <label>Tên Đăng Nhập</label>
+                <input type="text" name="user" class="form-control" required placeholder="Nhập: admin" />
+            </div>
+            <div class="form-group">
+                <label>Mật Khẩu</label>
+                <input type="password" name="pass" class="form-control" required placeholder="Nhập: 123" />
+            </div>
+            <button type="submit" class="btn btn-primary btn-block" style="background-color: #5d4037; border: none;">Đăng Nhập</button>
+
+            if (ViewBag.Error != null)
+            {
+                <div class="alert alert-danger" style="margin-top: 15px; text-align: center;">@ViewBag.Error</div>
+            }
+        }
+    </div>
+</body>
+</html>

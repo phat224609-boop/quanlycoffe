@@ -1,0 +1,76 @@
+﻿@model IEnumerable<quanlycoffe.Models.KhachHang>
+@{
+    ViewBag.Title = "Quản Lý Khách Hàng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="panel panel-default" style="margin: 20px;">
+    <div class="panel-heading" style="background-color: #4e342e; color: white; padding: 15px;">
+        <h3 class="panel-title" style="font-weight: bold; margin: 0;"><i class="fa fa-users"></i> DANH SÁCH KHÁCH HÀNG</h3>
+    </div>
+    <div class="panel-body" style="padding: 20px;">
+
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger" style="font-weight: bold;">
+                <i class="fa fa-exclamation-triangle"></i> @TempData["Error"]
+            </div>
+        }
+
+        <div style="margin-bottom: 15px;">
+            <a href="@Url.Action("Create", "KhachHang")" class="btn btn-success" style="font-weight: bold;">
+                <i class="fa fa-plus"></i> + THÊM KHÁCH HÀNG MỚI
+            </a>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped table-hover">
+                <thead style="background-color: #efebe9;">
+                    <tr>
+                        <th style="text-align: center; width: 80px;">Mã KH</th>
+                        <th>Tên Khách Hàng</th>
+                        <th>Điện Thoại</th>
+                        <th>Khu Vực</th>
+                        <th>Nhóm KH</th>
+                        <th>Hạng Thẻ</th>
+                        <th style="text-align: center; width: 150px;">Thao Tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td style="font-weight: bold; text-align: center; color: #2e7d32;">@item.MaKH</td>
+                                <td style="font-weight: bold;">@item.TenKH</td>
+                                <td>@item.DienThoai</td>
+
+                                <td>@(item.plp_KhuVuc != null ? item.plp_KhuVuc.TenKV : "Chưa có")</td>
+                                <td>@(item.plp_NhomKH != null ? item.plp_NhomKH.TenNhomKH : "Chưa có")</td>
+                                <td>@(item.plp_HangThanhVien != null ? item.plp_HangThanhVien.TenHang : "Chưa có")</td>
+
+                                <td style="text-align: center;">
+                                    <a href="@Url.Action("Edit", "KhachHang", new { id = item.MaKH })" class="btn btn-sm btn-primary">
+                                        <i class="fa fa-edit"></i> Sửa
+                                    </a>
+                                    <a href="@Url.Action("Delete", "KhachHang", new { id = item.MaKH })" class="btn btn-sm btn-danger" onclick="return confirm('Bạn có chắc chắn muốn xóa khách hàng [@item.TenKH] không?');">
+                                        <i class="fa fa-trash"></i> Xóa
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="7" style="text-align: center; color: #c0392b; font-style: italic; padding: 20px;">
+                                <i class="fa fa-info-circle"></i> Hệ thống chưa có dữ liệu khách hàng nào!
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

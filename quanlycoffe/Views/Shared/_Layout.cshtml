@@ -91,8 +91,9 @@
             @if (Session["UserID"] != null)
             {
                 @* 1. Nhóm Bán hàng & Marketing *@
-                <a href="@Url.Action("Index", "Home")">Bán hàng (POS)</a>
-                <a href="#" style="color: #bdc3c7;" title="Đang phát triển">Khách hàng</a>
+            <a href="@Url.Action("Index", "BanHang")" style="color: #e74c3c; font-weight: bold;">
+                <i class="fa fa-shopping-cart"></i> Bán Hàng (POS)   </a>
+            <a href="@Url.Action("Index", "KhachHang")"> <i class="fa fa-users"></i> Khách hàng </a>
                 <a href="#" style="color: #bdc3c7;" title="Đang phát triển">Khuyến mãi</a>
 
                 @* 2. Nhóm Quản lý Dữ liệu (Đã code xong) *@
@@ -104,7 +105,7 @@
                     <a href="@Url.Action("DSTaiKhoan", "HeThong")"><i class="fa fa-key"></i> Quản lý tài khoản</a>
                 }
                     @* 3. Nhóm Vận hành & Thống kê *@
-                    <a href="#" style="color: #bdc3c7;" title="Đang phát triển">Kho hàng</a>
+                   
                     <a href="#" style="color: #bdc3c7;" title="Đang phát triển">Báo cáo</a>
 
 

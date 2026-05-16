@@ -1,0 +1,75 @@
+﻿@model quanlycoffe.Models.KhachHang
+@{
+    ViewBag.Title = "Thêm Khách Hàng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="panel panel-default" style="max-width: 600px; margin: 20px auto; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+    <div class="panel-heading" style="background-color: #2e7d32; color: white; padding: 12px 20px;">
+        <h3 class="panel-title" style="font-weight: bold; margin: 0;">➕ THÊM KHÁCH HÀNG MỚI</h3>
+    </div>
+    <div class="panel-body" style="padding: 20px;">
+
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger" style="font-weight: bold;">
+                <i class="fa fa-exclamation-triangle"></i> @ViewBag.Error
+            </div>
+        }
+        @Html.ValidationSummary(false, "", new { @class = "text-danger", @style = "font-weight: bold; margin-bottom: 15px;" })
+
+        @using (Html.BeginForm("Create", "KhachHang", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="form-group">
+                <label>Mã Khách Hàng <span style="color:red;">*</span>:</label>
+                @Html.TextBoxFor(m => m.MaKH, new { @class = "form-control", @required = "required", @placeholder = "Ví dụ: KH001, KH002..." })
+            </div>
+
+            <div class="form-group">
+                <label>Tên Khách Hàng <span style="color:red;">*</span>:</label>
+                @Html.TextBoxFor(m => m.TenKH, new { @class = "form-control", @required = "required", @placeholder = "Nhập họ và tên..." })
+            </div>
+
+            <div class="form-group">
+                <label>Số Điện Thoại:</label>
+                @Html.TextBoxFor(m => m.DienThoai, new { @class = "form-control", @placeholder = "Nhập số điện thoại..." })
+            </div>
+
+            <div class="form-group">
+                <label>Địa Chỉ:</label>
+                @Html.TextBoxFor(m => m.DiaChi, new { @class = "form-control", @placeholder = "Nhập địa chỉ..." })
+            </div>
+
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>Khu Vực:</label>
+                        @Html.DropDownList("MaKV", null, htmlAttributes: new { @class = "form-control" })
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>Nhóm Khách Hàng:</label>
+                        @Html.DropDownList("MaNhomKH", null, htmlAttributes: new { @class = "form-control" })
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>Hạng Thành Viên:</label>
+                        @Html.DropDownList("MaHang", null, htmlAttributes: new { @class = "form-control" })
+                    </div>
+                </div>
+            </div>
+
+            <hr />
+            <div style="text-align: right;">
+                <a href="@Url.Action("Index")" class="btn btn-default">Quay lại</a>
+                <button type="submit" class="btn btn-success" style="font-weight: bold;">
+                    <i class="fa fa-save"></i> LƯU THÔNG TIN
+                </button>
+            </div>
+        }
+    </div>
+</div>

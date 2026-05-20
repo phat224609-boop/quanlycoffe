@@ -1,0 +1,20 @@
+﻿@model quanlycoffe.Models.plp_Ban
+@{
+    ViewBag.Title = "Xác nhận xóa";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="alert alert-danger" style="margin-top:20px;">
+    <h3>Bạn có chắc chắn muốn xóa bàn này không?</h3>
+    <p>Tên bàn: <strong>@Model.TenBan</strong></p>
+    <p>Khu vực: @Model.plp_KhuVuc_Ban.TenKhuVuc</p>
+
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+        <div class="form-actions no-color" style="margin-top:15px;">
+            <input type="submit" value="Đồng ý xóa" class="btn btn-danger" />
+            <a href="@Url.Action("Index")" class="btn btn-default">Hủy bỏ</a>
+        </div>
+    }
+</div>

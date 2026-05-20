@@ -76,7 +76,7 @@ namespace quanlycoffe.Controllers
                 {
                     sp.HetHang = false;
                     sp.ChietKhau = 0;
-                    sp.QuyCach = 1 ;
+                    sp.QuyCach = 1;
                     sp.DVT_QC = sp.DVT;
                     sp.MaVach = "00000000";
                     sp.MaSoRiengTA = "N/A";

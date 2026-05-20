@@ -24,6 +24,7 @@ namespace quanlycoffe.Models
         public string TenHang { get; set; }
         public int DiemToiThieu { get; set; }
         public decimal TyLeGiamGia { get; set; }
+        public Nullable<int> PhanTramGiam { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<KhachHang> KhachHang { get; set; }

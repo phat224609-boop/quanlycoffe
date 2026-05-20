@@ -1,0 +1,60 @@
+﻿@model IEnumerable<quanlycoffe.Models.plp_Ban>
+
+@{
+    ViewBag.Title = "Danh Sách Bàn";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="panel panel-primary" style="margin-top: 20px;">
+    <div class="panel-heading">
+        <h3 class="panel-title" style="font-size: 20px;"><i class="fa fa-table"></i> DANH SÁCH BÀN CỦA QUÁN</h3>
+    </div>
+    <div class="panel-body">
+        <p>
+            <a href="@Url.Action("Create")" class="btn btn-success">
+                <i class="fa fa-plus"></i> Thêm Bàn Mới
+            </a>
+        </p>
+        <table class="table table-bordered table-hover">
+            <tr style="background-color: #f9f9f9;">
+                <th>Tên Bàn</th>
+                <th>Thuộc Khu Vực</th>
+                <th class="text-center">Số Ghế</th>
+                <th class="text-center">Trạng Thái</th>
+                <th class="text-center" width="180">Thao tác</th> @* --- BƯỚC 3: THÊM CỘT NÀY --- *@
+            </tr>
+
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td><strong>@item.TenBan</strong></td>
+                    <td>@(item.plp_KhuVuc_Ban != null ? item.plp_KhuVuc_Ban.TenKhuVuc : "Chưa có")</td>
+                    <td class="text-center">@item.SoGhe</td>
+                    <td class="text-center">
+                        @if (item.TrangThai == 0)
+                        {
+                            <span class="label label-default">Trống</span>
+                        }
+                        else if (item.TrangThai == 1)
+                        {
+                            <span class="label label-success">Có khách</span>
+                        }
+                        else
+                        {
+                            <span class="label label-warning">Đặt trước</span>
+                        }
+                    </td>
+                    @* --- BƯỚC 3: CÁC NÚT BẤM THAO TÁC --- *@
+                    <td class="text-center">
+                        <a href="@Url.Action("Edit", new { id = item.MaBan })" class="btn btn-warning btn-xs">
+                            <i class="fa fa-edit"></i> Sửa
+                        </a>
+                        <a href="@Url.Action("Delete", new { id = item.MaBan })" class="btn btn-danger btn-xs" style="margin-left:5px;">
+                            <i class="fa fa-trash"></i> Xóa
+                        </a>
+                    </td>
+                </tr>
+            }
+        </table>
+    </div>
+</div>

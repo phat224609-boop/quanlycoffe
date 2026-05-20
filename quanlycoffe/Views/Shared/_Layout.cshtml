@@ -5,19 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title - Quản Lý Cafe</title>
 
-    @* Giữ lại file CSS của hệ thống *@
     <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    @* --- BƯỚC 1: THÊM CSS SELECT2 --- *@
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
     <style>
-        /* CSS ĐỘC QUYỀN CHO HEADER: Bất chấp mọi phiên bản Bootstrap */
         .pro-header {
-            background-color: #3e2723; /* Màu nâu cafe */
+            background-color: #3e2723; /* Màu nâu cafe chuẩn của bạn */
             height: 65px;
             display: flex;
             align-items: center;
-            justify-content: space-between; /* Đẩy logo sang trái, menu sang phải */
+            justify-content: space-between;
             padding: 0 40px;
-            position: fixed; /* Ghim chặt lên đầu trang */
+            position: fixed;
             top: 0;
             left: 0;
             right: 0;
@@ -28,116 +30,144 @@
             .pro-header a {
                 color: white;
                 text-decoration: none;
-                font-size: 15px;
-                padding: 10px 15px;
+                font-size: 14px;
+                padding: 10px 10px;
                 border-radius: 5px;
                 font-weight: 500;
-                transition: all 0.2s ease-in-out;
-                margin-left: 5px;
             }
 
                 .pro-header a:hover {
                     background-color: #5d4037;
-                    text-decoration: none;
                     color: #f39c12;
+                    text-decoration: none;
                 }
 
-            /* Nổi bật Logo */
-            .pro-header .pro-logo {
-                font-size: 22px !important;
-                font-weight: bold;
-                color: #f39c12 !important;
-                padding: 0;
-                background: transparent !important;
-            }
-
-        /* Nút Đăng nhập & Đăng xuất nổi bật */
-        .btn-login {
-            background-color: #27ae60;
-            border: 1px solid #2ecc71;
+        .pro-logo {
+            font-size: 20px !important;
+            font-weight: bold;
+            color: #f39c12 !important;
         }
 
-            .btn-login:hover {
-                background-color: #2ecc71 !important;
-                color: white !important;
-            }
-
-        .btn-logout {
-            background-color: #c0392b;
+        /* Dropdown POS */
+        .pro-dropdown {
+            position: relative;
+            display: inline-block;
         }
 
-            .btn-logout:hover {
-                background-color: #e74c3c !important;
-                color: white !important;
+        .pro-dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #fff;
+            min-width: 180px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            z-index: 10000;
+            top: 45px;
+            border-radius: 4px;
+        }
+
+            .pro-dropdown-content a {
+                color: #333 !important;
+                display: block;
+                padding: 10px 15px;
+                border-bottom: 1px solid #eee;
             }
 
-        /* Đẩy nội dung web xuống để không bị header che mất */
+                .pro-dropdown-content a:hover {
+                    background: #fdf2e9 !important;
+                }
+
+        .pro-dropdown:hover .pro-dropdown-content {
+            display: block;
+        }
+
         body {
-            padding-top: 90px;
+            padding-top: 85px;
             background-color: #f8f9fa;
         }
+
+        /* Tinh chỉnh giao diện Select2 để khớp với Bootstrap */
+        .select2-container--default .select2-selection--single {
+            height: 38px !important;
+            border: 1px solid #ccc !important;
+        }
+
+            .select2-container--default .select2-selection--single .select2-selection__rendered {
+                line-height: 36px !important;
+            }
+
+            .select2-container--default .select2-selection--single .select2-selection__arrow {
+                height: 36px !important;
+            }
     </style>
 </head>
 <body>
 
-    @* --- THANH HEADER ĐÃ ĐƯỢC LÀM LẠI --- *@
     <div class="pro-header">
         <div>
             <a href="@Url.Action("Index", "Home")" class="pro-logo">☕ COFFEE MANAGER</a>
         </div>
 
         <div style="display: flex; align-items: center;">
-            @* NẾU ĐÃ ĐĂNG NHẬP: Hiện menu quản lý và tên tài khoản *@
             @if (Session["UserID"] != null)
             {
-                @* 1. Nhóm Bán hàng & Marketing *@
-            <a href="@Url.Action("Index", "BanHang")" style="color: #e74c3c; font-weight: bold;">
-                <i class="fa fa-shopping-cart"></i> Bán Hàng (POS)   </a>
-            <a href="@Url.Action("Index", "KhachHang")"> <i class="fa fa-users"></i> Khách hàng </a>
-                <a href="#" style="color: #bdc3c7;" title="Đang phát triển">Khuyến mãi</a>
+                <div class="pro-dropdown">
+                    <a href="#" style="color: #e74c3c; font-weight: bold;">
+                        <i class="fa fa-shopping-cart"></i> Bán Hàng (POS)
+                    </a>
+                    <div class="pro-dropdown-content">
+                        <a href="@Url.Action("SoDoBan", "Ban")">Sơ đồ bàn</a>
+                        <a href="@Url.Action("Index", "POS", new { maBan = 0 })">Bán mang đi</a>
+                        @if (Session["Quyen"]?.ToString() == "Admin")
+                        {
+                            <a href="@Url.Action("Index", "QuanLyBan")">Quản lý danh mục bàn</a>
+                        }
+                    </div>
+                </div>
 
-                @* 2. Nhóm Quản lý Dữ liệu (Đã code xong) *@
+                <a href="@Url.Action("Index", "KhachHang")">Khách hàng</a>
+                <a href="#">Khuyến mãi</a>
                 <a href="@Url.Action("Index", "SanPham")">Hàng hóa</a>
-                if (Session["Quyen"] != null && Session["Quyen"].ToString() == "Admin")
+
+                <a href="@Url.Action("LichSu", "HoaDon")" style="color: #f1c40f;">
+                    <i class="fa fa-history"></i> Lịch sử hóa đơn
+                </a>
+
+                if (Session["Quyen"]?.ToString() == "Admin")
                 {
                     <a href="@Url.Action("Index", "NhaCungCap")">Đối tác</a>
                     <a href="@Url.Action("Index", "HeThong")">Hệ thống</a>
-                    <a href="@Url.Action("DSTaiKhoan", "HeThong")"><i class="fa fa-key"></i> Quản lý tài khoản</a>
+                    <a href="@Url.Action("DSTaiKhoan", "HeThong")">Quản lý tài khoản</a>
                 }
-                    @* 3. Nhóm Vận hành & Thống kê *@
-                   
-                    <a href="#" style="color: #bdc3c7;" title="Đang phát triển">Báo cáo</a>
 
+                <a href="#">Báo cáo</a>
 
-
-                    <span style="color: #bdc3c7; margin: 0 15px 0 20px;">|</span>
-                    <span style="color: white; margin-right: 15px;">
-                        Chào, <b style="color: #f39c12;">@Session["LoginName"]</b>
-                    </span>
-
-                    <a href="@Url.Action("Logout", "Account")" class="btn-logout">Đăng xuất</a>
-                }
-                @* NẾU CHƯA ĐĂNG NHẬP: Chỉ hiện nút Đăng nhập *@
-                else
-                {
-                    <a href="@Url.Action("Login", "Account")" class="btn-login">Đăng nhập</a>
-                }
-            </div>
+                <span style="color: #777; margin: 0 10px;">|</span>
+                <span style="color: white;">Chào, <b style="color: #f39c12;">@Session["LoginName"]</b></span>
+                <a href="@Url.Action("Logout", "Account")" style="background:#c0392b; margin-left:10px; padding: 5px 15px;">Đăng xuất</a>
+            }
+            else
+            {
+                <a href="@Url.Action("Login", "Account")" style="background:#27ae60; padding: 5px 15px;">Đăng nhập</a>
+            }
+        </div>
     </div>
 
-    @* --- PHẦN NỘI DUNG WEB BÊN DƯỚI --- *@
-    <div class="container body-content">
+    <div class="container-fluid" style="padding: 0 30px;">
         @RenderBody()
-        <hr style="border-top: 1px solid #ccc; margin-top: 40px;" />
-        <footer>
-            <p style="color: #555; text-align: center;">
-                &copy; @DateTime.Now.Year - Nền tảng quản lý vận hành chuyên nghiệp Pro Coffee System - Leader: <b>@(Session["LoginName"] ?? "Nguyễn Tấn Phát")</b>
-            </p>
-        </footer>
     </div>
 
-    <script src="~/Scripts/jquery-3.4.1.min.js"></script>
-    <script src="~/Scripts/bootstrap.min.js"></script>
+    <footer style="margin-top: 50px; text-align: center; padding: 20px;">
+        <hr />
+        <p>&copy; @DateTime.Now.Year - Nền tảng quản lý vận hành chuyên nghiệp Pro Coffee System - Leader: <b>@Session["LoginName"]</b></p>
+    </footer>
+
+    @* --- THỨ TỰ SCRIPTS: JQUERY -> BOOTSTRAP -> SELECT2 --- *@
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+    @* --- BƯỚC 1: THÊM JS SELECT2 --- *@
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
     @RenderSection("scripts", required: false)
 </body>
 </html>

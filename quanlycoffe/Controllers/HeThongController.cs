@@ -23,7 +23,6 @@ namespace quanlycoffe.Controllers
         // ==========================================
         // 1. DANH SÁCH NHÂN VIÊN
         // ==========================================
-        // 1. DANH SÁCH NHÂN VIÊN
         public ActionResult Index()
         {
             if (Session["UserID"] == null) return RedirectToAction("Login", "Account");
@@ -81,14 +80,19 @@ namespace quanlycoffe.Controllers
                 // 1. Thêm nhân viên
                 db.NhanVien.Add(nv);
 
-                // 2. Tạo tài khoản tự động (Bơm đầy đủ các trường NOT NULL để tránh lỗi màn hình vàng)
+                // --- BƯỚC BỌC THÉP TỰ ĐỘNG TẠO ID MỚI TRÁNH TRÙNG LẶP ---
+                // Lấy UserID lớn nhất hiện tại, nếu chưa có ai thì lấy số 0
+                int maxUserID = db.plp_LoginUser.Any() ? db.plp_LoginUser.Max(t => t.UserID) : 0;
+
+                // 2. Tạo tài khoản tự động (Bơm đầy đủ các trường NOT NULL)
                 var taiKhoanMoi = new plp_LoginUser();
+                taiKhoanMoi.UserID = maxUserID + 1; // TỰ ĐỘNG CỘNG 1 CHO ID MỚI
                 taiKhoanMoi.Login_Name = "nv" + nv.MaNV;
                 taiKhoanMoi.PW_matkhau = "123456";
                 taiKhoanMoi.Quyen = "User";
                 taiKhoanMoi.MaNV = nv.MaNV;
                 taiKhoanMoi.Email = string.IsNullOrEmpty(EmailInput) ? "chua_co@gmail.com" : EmailInput;
-                taiKhoanMoi.TrangThai = "Hoạt động"; // <-- BỔ SUNG CỘT TRẠNG THÁI THEO SQL CỦA BẠN
+                taiKhoanMoi.TrangThai = "Hoạt động";
 
                 db.plp_LoginUser.Add(taiKhoanMoi);
 
@@ -101,6 +105,7 @@ namespace quanlycoffe.Controllers
             ViewBag.MaNghiepVu = new SelectList(db.plp_NghiepVu, "MaNghiepVu", "TenNghiepVu", nv.MaNghiepVu);
             return View(nv);
         }
+
         // ==========================================
         // 3. SỬA THÔNG TIN NHÂN VIÊN
         // ==========================================
@@ -121,7 +126,6 @@ namespace quanlycoffe.Controllers
             return View(nv);
         }
 
-        // 3. SỬA THÔNG TIN NHÂN VIÊN (POST)
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit(NhanVien nv, string EmailInput)
@@ -151,13 +155,17 @@ namespace quanlycoffe.Controllers
                     }
                     else
                     {
+                        // --- ÁP DỤNG LUÔN CHIÊU NÀY KHI SỬA MÀ PHẢI TẠO TÀI KHOẢN MỚI ---
+                        int maxUserID = db.plp_LoginUser.Any() ? db.plp_LoginUser.Max(t => t.UserID) : 0;
+
                         var taiKhoanMoi = new plp_LoginUser();
+                        taiKhoanMoi.UserID = maxUserID + 1; // TỰ ĐỘNG CỘNG 1 CHO ID MỚI
                         taiKhoanMoi.Login_Name = "nv" + nv.MaNV;
                         taiKhoanMoi.PW_matkhau = "123456";
                         taiKhoanMoi.Quyen = "User";
                         taiKhoanMoi.MaNV = nv.MaNV;
                         taiKhoanMoi.Email = EmailInput;
-                        taiKhoanMoi.TrangThai = "Hoạt động"; // <-- BỔ SUNG Ở ĐÂY NỮA PHÁT NHÉ
+                        taiKhoanMoi.TrangThai = "Hoạt động";
                         db.plp_LoginUser.Add(taiKhoanMoi);
                     }
 
@@ -169,6 +177,7 @@ namespace quanlycoffe.Controllers
             ViewBag.MaNghiepVu = new SelectList(db.plp_NghiepVu, "MaNghiepVu", "TenNghiepVu", nv.MaNghiepVu);
             return View(nv);
         }
+
         // ==========================================
         // 4. XÓA NHÂN VIÊN
         // ==========================================
@@ -185,6 +194,7 @@ namespace quanlycoffe.Controllers
             db.SaveChanges();
             return RedirectToAction("Index");
         }
+
         // ==========================================
         // 5. QUẢN LÝ TÀI KHOẢN HỆ THỐNG
         // ==========================================

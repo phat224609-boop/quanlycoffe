@@ -33,6 +33,7 @@
                         <th>Khu Vực</th>
                         <th>Nhóm KH</th>
                         <th>Hạng Thẻ</th>
+                        <th style="text-align: center; color: #d35400;">Điểm Tích Lũy</th>
                         <th style="text-align: center; width: 150px;">Thao Tác</th>
                     </tr>
                 </thead>
@@ -50,6 +51,10 @@
                                 <td>@(item.plp_NhomKH != null ? item.plp_NhomKH.TenNhomKH : "Chưa có")</td>
                                 <td>@(item.plp_HangThanhVien != null ? item.plp_HangThanhVien.TenHang : "Chưa có")</td>
 
+                                <td style="text-align: center; font-weight: bold; color: #e74c3c; font-size: 16px;">
+                                    @item.DiemTichLuy
+                                </td>
+
                                 <td style="text-align: center;">
                                     <a href="@Url.Action("Edit", "KhachHang", new { id = item.MaKH })" class="btn btn-sm btn-primary">
                                         <i class="fa fa-edit"></i> Sửa
@@ -64,7 +69,7 @@
                     else
                     {
                         <tr>
-                            <td colspan="7" style="text-align: center; color: #c0392b; font-style: italic; padding: 20px;">
+                            <td colspan="8" style="text-align: center; color: #c0392b; font-style: italic; padding: 20px;">
                                 <i class="fa fa-info-circle"></i> Hệ thống chưa có dữ liệu khách hàng nào!
                             </td>
                         </tr>

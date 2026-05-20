@@ -117,6 +117,7 @@
           <Property Name="TenHang" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="DiemToiThieu" Type="int" Nullable="false" />
           <Property Name="TyLeGiamGia" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="PhanTramGiam" Type="int" />
         </EntityType>
         <EntityType Name="plp_KhuVuc">
           <Key>
@@ -632,6 +633,7 @@
           <Property Name="DiemToiThieu" Type="Int32" Nullable="false" />
           <Property Name="TyLeGiamGia" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
           <NavigationProperty Name="KhachHang" Relationship="Self.FK_KhachHang_Hang" FromRole="plp_HangThanhVien" ToRole="KhachHang" />
+          <Property Name="PhanTramGiam" Type="Int32" />
         </EntityType>
         <EntityType Name="plp_KhuVuc">
           <Key>
@@ -1151,6 +1153,7 @@
           <EntitySetMapping Name="plp_HangThanhVien">
             <EntityTypeMapping TypeName="BMSModel_DB.plp_HangThanhVien">
               <MappingFragment StoreEntitySet="plp_HangThanhVien">
+                <ScalarProperty Name="PhanTramGiam" ColumnName="PhanTramGiam" />
                 <ScalarProperty Name="MaHang" ColumnName="MaHang" />
                 <ScalarProperty Name="TenHang" ColumnName="TenHang" />
                 <ScalarProperty Name="DiemToiThieu" ColumnName="DiemToiThieu" />

@@ -1,0 +1,81 @@
+﻿@model IEnumerable<quanlycoffe.Models.plp_Ban>
+
+@{
+    ViewBag.Title = "Sơ đồ phòng bàn";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    /* CSS Tùy chỉnh cho ô bàn đẹp hơn */
+    .ban-item {
+        height: 120px;
+        border-radius: 12px;
+        text-decoration: none !important;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        transition: transform 0.2s, box-shadow 0.2s;
+        color: white !important; /* Chữ luôn màu trắng cho nổi */
+    }
+
+        .ban-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+        }
+
+    .ban-name {
+        font-size: 36px;
+        font-weight: 900;
+        margin: 0;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+    }
+
+    .ban-status {
+        font-size: 14px;
+        font-weight: bold;
+        margin-top: 8px;
+        background: rgba(0,0,0,0.2);
+        padding: 4px 12px;
+        border-radius: 20px;
+    }
+
+    /* Màu Xanh: Trống */
+    .bg-trong {
+        background: linear-gradient(135deg, #2ecc71, #27ae60);
+    }
+
+    /* Màu Đỏ: Đang phục vụ */
+    .bg-phucvu {
+        background: linear-gradient(135deg, #e74c3c, #c0392b);
+    }
+</style>
+
+<h2 style="font-weight: bold; color: #3e2723;"><i class="fa fa-th-large"></i> SƠ ĐỒ BÀN & CHỌN BÀN ORDER</h2>
+<hr style="border-top: 2px solid #eee;" />
+
+<div class="row">
+    @foreach (var ban in Model)
+    {
+        // Mặc định: Xanh lá (Bàn trống)
+        string bgClass = "bg-trong";
+        string textStatus = "Trống";
+        string icon = "fa-check";
+
+        // Kiểm tra nếu có người (Trạng thái = 1): Chuyển sang Đỏ
+        if (ban.TrangThai == 1)
+        {
+            bgClass = "bg-phucvu";
+            textStatus = "Đang phục vụ";
+            icon = "fa-coffee";
+        }
+
+        <div class="col-md-2 col-sm-3 col-xs-6" style="margin-bottom: 25px;">
+            <a href="@Url.Action("Index", "POS", new { maBan = ban.MaBan })" class="ban-item @bgClass">
+                <p class="ban-name">@ban.TenBan</p>
+                <span class="ban-status"><i class="fa @icon"></i> @textStatus</span>
+            </a>
+        </div>
+    }
+</div>

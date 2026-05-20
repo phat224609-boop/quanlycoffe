@@ -1,0 +1,188 @@
+﻿@model IEnumerable<quanlycoffe.Models.HoaDonBH>
+@{
+    ViewBag.Title = "Lịch sử hóa đơn";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="panel panel-default" style="margin-top: 20px;">
+    <div class="panel-heading">
+        <h3 class="panel-title"><b><i class="fa fa-history"></i> LỊCH SỬ GIAO DỊCH</b></h3>
+    </div>
+    <div class="panel-body">
+        <table class="table table-bordered table-hover">
+            <thead>
+                <tr class="active">
+                    <th>Mã HD</th>
+                    <th>Thời gian</th>
+                    <th>Bàn</th>
+                    <th>Tổng tiền</th>
+                    <th>Trạng thái</th>
+                    <th class="text-center">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td><b>@item.MaHD</b></td>
+                        <td>@item.NgayBan.ToString("dd/MM/yyyy HH:mm")</td>
+                        <td>@(item.MaBan == null ? "Mang đi" : "Bàn " + item.MaBan)</td>
+                        <td class="text-right text-danger"><b>@string.Format("{0:N0}", item.TongThu) đ</b></td>
+                        <td class="text-center">
+                            @if (item.DaThanhToan == 0)
+                            {
+                                <span class="label label-warning">Đang chờ thanh toán</span>
+                            }
+                            else
+                            {
+                                <span class="label label-success">Đã thanh toán</span>
+                            }
+                        </td>
+                        <td class="text-center">
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-xs btn-info" onclick="XemChiTiet('@item.MaHD', @Convert.ToInt32(item.TongThu))">
+                                    <i class="fa fa-eye"></i> Chi tiết
+                                </button>
+
+                                <button type="button" class="btn btn-xs btn-success" onclick="UpdateSTT('@item.MaHD', 1)">
+                                    <i class="fa fa-check"></i> Đã trả tiền
+                                </button>
+                                <button type="button" class="btn btn-xs btn-default" onclick="UpdateSTT('@item.MaHD', 0)">
+                                    <i class="fa fa-clock-o"></i> Chờ lại
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div id="modalTuChe" style="display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); overflow: auto;">
+    <div style="background-color: #fff; margin: 3% auto; width: 600px; max-width: 90%; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); overflow: hidden; animation: popIn 0.3s ease;">
+
+        <div style="background-color: #3e2723; color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center;">
+            <h4 style="margin: 0; font-weight: bold;"><i class="fa fa-list-alt"></i> CHI TIẾT HÓA ĐƠN: <span id="lblMaHienThi" style="color: #f1c40f;"></span></h4>
+            <span onclick="DongModal()" style="font-size: 24px; font-weight: bold; cursor: pointer;">&times;</span>
+        </div>
+
+        <div style="padding: 10px 20px; background-color: #f1f2f6; border-bottom: 1px solid #ddd; text-align: center;">
+            <p style="margin:0; color: #2c3e50; font-size: 15px;"><b>Nhân viên phục vụ:</b> <span id="lblNhanVienChiTiet" style="color: #d35400;">Đang tải...</span></p>
+        </div>
+
+        <div style="padding: 20px;">
+            <table class="table table-bordered table-striped">
+                <thead style="background-color: #f9f9f9;">
+                    <tr>
+                        <th>Tên món</th>
+                        <th class="text-center">SL</th>
+                        <th class="text-right">Đơn giá</th>
+                        <th class="text-right">Thành tiền</th>
+                    </tr>
+                </thead>
+                <tbody id="chiTietBody">
+                </tbody>
+            </table>
+
+            <div style="text-align: center; margin-top: 20px; padding-top: 15px; border-top: 1px dashed #ccc;">
+                <p style="font-weight: bold; color: #2980b9; margin-bottom: 5px; font-size: 15px;">QUÉT MÃ ĐỂ THANH TOÁN</p>
+                <img id="imgQRChiTiet" src="" alt="Mã QR Chuyển Khoản" style="width: 220px; height: 220px; border: 1px solid #ddd; padding: 5px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);" />
+                <p style="margin-top: 10px; font-weight: bold; color: #e74c3c; font-size: 18px;">Tổng tiền: <span id="lblSoTienQR">0</span>đ</p>
+                <p style="font-size: 13px; color: #555; margin: 0;"><b>MB Bank</b> - STK: <b>0965574552</b></p>
+            </div>
+        </div>
+
+        <div style="padding: 15px; text-align: right; border-top: 1px solid #eee; background-color: #f9f9f9;">
+            <button type="button" class="btn btn-default" onclick="DongModal()" style="font-weight: bold;">Đóng Lại</button>
+        </div>
+    </div>
+</div>
+
+<style>
+    @@keyframes popIn {
+        from {
+            transform: translateY(-30px);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+</style>
+
+@section Scripts {
+    <script>
+        // Mở bảng & Tạo QR
+        function XemChiTiet(maHD, tongThu) {
+            // 1. Cập nhật tiêu đề và Reset bảng
+            $('#lblMaHienThi').text(maHD);
+            $('#lblNhanVienChiTiet').text("Đang tải..."); // Hiện chữ chờ tải tên nhân viên
+            $('#chiTietBody').html('<tr><td colspan="4" class="text-center text-muted"><i class="fa fa-spinner fa-spin"></i> Đang tải dữ liệu...</td></tr>');
+
+            // 2. TẠO MÃ QR ĐỘNG TỪ VIETQR
+            var qrUrl = `https://img.vietqr.io/image/MB-0965574552-compact.png?amount=${tongThu}&addInfo=${maHD}`;
+            $('#imgQRChiTiet').attr('src', qrUrl);
+            $('#lblSoTienQR').text(tongThu.toLocaleString('vi-VN'));
+
+            // 3. Hiện Popup
+            $('#modalTuChe').fadeIn(200);
+
+            // 4. Lấy danh sách món VÀ Tên nhân viên từ server
+            $.ajax({
+                url: '/HoaDon/GetChiTietHoaDon',
+                type: 'GET',
+                data: { maHD: maHD },
+                success: function (res) {
+                    if (res.success) {
+                        // In tên nhân viên phục vụ ra màn hình
+                        $('#lblNhanVienChiTiet').text(res.tenNhanVien);
+
+                        var html = '';
+                        if (res.data.length === 0) {
+                            html = '<tr><td colspan="4" class="text-center text-danger">Hóa đơn không có chi tiết!</td></tr>';
+                        } else {
+                            res.data.forEach(function (item) {
+                                html += `<tr>
+                                                    <td style="font-weight:bold;">${item.TenSP}</td>
+                                                    <td class="text-center">${item.SoLuong}</td>
+                                                    <td class="text-right">${item.DonGia.toLocaleString('vi-VN')}đ</td>
+                                                    <td class="text-right text-danger" style="font-weight:bold;">${item.ThanhTien.toLocaleString('vi-VN')}đ</td>
+                                                 </tr>`;
+                            });
+                        }
+                        $('#chiTietBody').html(html);
+                    } else {
+                        $('#chiTietBody').html(`<tr><td colspan="4" class="text-center text-danger">Lỗi: ${res.message}</td></tr>`);
+                        $('#lblNhanVienChiTiet').text("Lỗi tải dữ liệu");
+                    }
+                },
+                error: function () {
+                    $('#chiTietBody').html('<tr><td colspan="4" class="text-center text-danger">Lỗi mạng!</td></tr>');
+                    $('#lblNhanVienChiTiet').text("Lỗi mạng");
+                }
+            });
+        }
+
+        // Đóng bảng
+        function DongModal() {
+            $('#modalTuChe').fadeOut(200);
+        }
+
+        // Cập nhật trạng thái
+        function UpdateSTT(id, val) {
+            if (!confirm("Thay đổi trạng thái hóa đơn này?")) return;
+            $.ajax({
+                url: '/HoaDon/CapNhatTrangThai',
+                type: 'POST',
+                data: { maHD: id, trangThaiMoi: val },
+                success: function (res) {
+                    if (res.success) location.reload();
+                    else alert("Lỗi: " + res.message);
+                }
+            });
+        }
+    </script>
+}

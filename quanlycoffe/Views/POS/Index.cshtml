@@ -1,0 +1,418 @@
+﻿@{
+    ViewBag.Title = "POS Bán Hàng Nâng Cao";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    /* Nút tăng giảm số lượng */
+    .qty-btn {
+        padding: 2px 8px;
+        font-weight: bold;
+        border-radius: 4px;
+    }
+
+    .btn-delete-item {
+        color: #e74c3c;
+        cursor: pointer;
+        font-size: 16px;
+    }
+
+    /* ĐỊNH DẠNG LẠI Ô MÓN ĂN */
+    .sanpham-box {
+        height: 120px;
+        background-color: #ffffff;
+        border-radius: 12px;
+        padding: 10px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s ease-in-out;
+        border: 1px solid #f0f0f0;
+        width: 100%;
+    }
+
+        .sanpham-box:hover {
+            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+            transform: translateY(-4px);
+            border-color: #d35400;
+        }
+
+    .sanpham-ten {
+        font-weight: bold;
+        color: #5d4037;
+        font-size: 13px;
+        margin-bottom: 8px;
+        line-height: 1.4;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .sanpham-gia {
+        color: #d32f2f;
+        font-weight: 900;
+        font-size: 15px;
+    }
+
+    /* Hiệu ứng cho Modal Tự chế */
+    @@keyframes popIn {
+        from {
+            transform: translateY(-30px);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+</style>
+
+<div class="row" style="margin-bottom: 15px;">
+    <div class="col-md-12">
+        <h2 style="margin-top:0; font-weight: bold; color: #3e2723;">
+            Bán Hàng
+            @if (ViewBag.MaBan == 0)
+            {
+                <span class="label label-warning">- Mang đi</span>
+            }
+        </h2>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-7">
+        <div class="panel panel-primary" style="border-color: #3e2723;">
+            <div class="panel-heading" style="background-color: #3e2723; border-color: #3e2723;">
+                <div class="row">
+                    <div class="col-md-4"><h3 class="panel-title" style="line-height:30px;"><i class="fa fa-coffee"></i> THỰC ĐƠN</h3></div>
+                    <div class="col-md-8">
+                        <div class="input-group">
+                            <span class="input-group-addon"><i class="fa fa-search"></i></span>
+                            <input type="text" id="txtSearchMon" class="form-control" placeholder="Tìm tên món (cafe, trà sữa...)">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="panel-body" style="height: 600px; overflow-y: auto; background-color: #f8f9fa;">
+                <div class="row" id="danhSachMonAn">
+                    @foreach (var sp in ViewBag.DSMonAn)
+                    {
+                        <div class="col-md-3 col-sm-4 col-xs-6 item-mon" data-ten="@sp.TenSP.ToLower()" style="margin-bottom: 20px;">
+                            <div class="sanpham-box btn-chon-mon" data-id="@sp.MaSP" data-ten="@sp.TenSP" data-gia="@sp.GiaBan" title="@sp.TenSP">
+                                <div class="sanpham-ten">@sp.TenSP</div>
+                                <div class="sanpham-gia">@string.Format("{0:N0}", sp.GiaBan)đ</div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-5">
+        <div class="panel panel-success">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-md-6"><h3 class="panel-title" style="line-height:30px;"><i class="fa fa-shopping-cart"></i> GIỎ HÀNG</h3></div>
+                    <div class="col-md-6 text-right">
+                        <button class="btn btn-xs btn-danger" onclick="HuyDon()"><i class="fa fa-refresh"></i> Làm mới</button>
+                    </div>
+                </div>
+            </div>
+            <div class="panel-body">
+
+                <div class="row">
+                    <div class="col-md-6 form-group">
+                        <label><i class="fa fa-user"></i> Khách Hàng:</label>
+                        <select id="khachHangSelect" class="form-control" style="width:100%">
+                            <option value="" data-giam="0">-- Khách Vãng Lai --</option>
+                            @if (ViewBag.DSKhachHang != null)
+                            {
+                                foreach (quanlycoffe.Controllers.KhachHangViewModel kh in (IEnumerable<quanlycoffe.Controllers.KhachHangViewModel>)ViewBag.DSKhachHang)
+                                {
+                                    <option value="@kh.MaKH" data-giam="@kh.GiamGia">@kh.TenKH (@kh.TenHang)</option>
+                                }
+                            }
+                        </select>
+                    </div>
+
+                    <div class="col-md-6 form-group">
+                        <label><i class="fa fa-user-circle"></i> Nhân viên <span class="text-danger">*</span>:</label>
+                        <select id="nhanVienSelect" class="form-control" style="width:100%">
+                            <option value="">-- Chọn phục vụ --</option>
+                            @if (ViewBag.DSNhanVien != null)
+                            {
+                                foreach (var nv in ViewBag.DSNhanVien)
+                                {
+                                    <option value="@nv.MaNV">@nv.TenNV</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                </div>
+
+                <div style="height: 280px; overflow-y: auto; border: 1px solid #ddd; margin-bottom:10px;">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Tên món</th>
+                                <th width="100" class="text-center">SL</th>
+                                <th class="text-right">Giá</th>
+                                <th width="30"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="chiTietGioHang"></tbody>
+                    </table>
+                </div>
+
+                <div class="row" style="background: #f9f9f9; padding: 15px; margin: 0; border-radius: 8px; border: 1px solid #eee;">
+                    <div class="col-md-6">
+                        <label>Giảm giá (%):</label>
+                        <input type="number" id="txtGiamGia" class="form-control" value="0" min="0" max="100">
+                    </div>
+                    <div class="col-md-6 text-right">
+                        <p style="margin-bottom:2px;">Tạm tính: <span id="lblThanhTien">0</span>đ</p>
+                        <p style="margin-bottom:5px; color: green;">Giảm: -<span id="lblTienGiam">0</span>đ</p>
+                        <h3 class="text-danger" style="margin-top:0; font-weight: bold;">TỔNG: <span id="tongTienBill">0</span>đ</h3>
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top: 20px;">
+                    <div class="col-md-12">
+                        @if (ViewBag.MaBan == 0)
+                        {
+                            <button type="button" class="btn btn-success btn-lg btn-block" style="font-weight: bold; height: 60px; font-size: 18px;" onclick="HienThiXacNhanBill()">
+                                <i class="fa fa-qrcode"></i> THANH TOÁN
+                            </button>
+                        }
+                        else
+                        {
+                            <button type="button" class="btn btn-primary btn-lg btn-block" style="font-weight: bold; height: 60px; font-size: 18px;" onclick="HienThiXacNhanBill()">
+                                <i class="fa fa-bell"></i> ORDER
+                            </button>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="modalXacNhanBill" style="display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); overflow: auto;">
+    <div style="background-color: #fff; margin: 3% auto; width: 450px; max-width: 90%; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); overflow: hidden; animation: popIn 0.3s ease;">
+
+        <div style="padding: 20px; text-align: center; border-bottom: 2px dashed #ccc;">
+            <h3 style="margin: 0; font-weight: bold; color: #3e2723;">COFFEE MANAGER</h3>
+            <h4 style="margin: 10px 0; font-weight: bold;">HÓA ĐƠN TẠM TÍNH</h4>
+            <p style="margin:0;"><b>Bàn:</b> @(ViewBag.MaBan == 0 ? "Mang đi" : ViewBag.TenBan)</p>
+            <p style="margin:0; font-size: 13px;"><b>Nhân viên:</b> <span id="billXacNhanNhanVien" style="color: #d35400;"></span></p>
+        </div>
+
+        <div style="padding: 15px;">
+            <table class="table table-condensed" style="font-size: 14px;">
+                <thead>
+                    <tr style="border-bottom: 1px solid #000;">
+                        <th>Tên món</th>
+                        <th class="text-center">SL</th>
+                        <th class="text-right">Tiền</th>
+                    </tr>
+                </thead>
+                <tbody id="billXacNhanBody">
+                </tbody>
+            </table>
+
+            <div style="text-align: right; border-top: 1px dashed #000; padding-top: 10px; margin-top: 10px;">
+                <p>Tạm tính: <span id="billXacNhanTamTinh">0</span>đ</p>
+                <p>Giảm giá: <span id="billXacNhanGiam">0</span>%</p>
+                <h3 style="color: #c0392b; font-weight: bold; margin-top: 5px;">TỔNG: <span id="billXacNhanTongTien">0</span>đ</h3>
+            </div>
+
+            <div style="text-align: center; margin-top: 20px; padding-top: 15px; border-top: 1px dashed #ccc;">
+                <p style="font-weight: bold; color: #2980b9; margin-bottom: 5px;">QUÉT MÃ ĐỂ CHUYỂN KHOẢN</p>
+                <img id="imgQRBillXacNhan" src="" alt="Mã QR Chuyển Khoản" style="width: 220px; height: 220px; border: 1px solid #ddd; padding: 5px; border-radius: 8px;" />
+                <p style="font-size: 13px; color: #555; margin-top: 8px;"><b>MB Bank</b> - STK: <b>0965574552</b></p>
+            </div>
+        </div>
+
+        <div style="padding: 15px; background-color: #f9f9f9; display: flex; justify-content: space-between; border-top: 1px solid #eee;">
+            <button class="btn btn-default" onclick="DongModalBill()" style="font-weight: bold; font-size: 15px;">Quay lại</button>
+            <button class="btn btn-success" onclick="XuLyThanhToan()" style="font-weight: bold; font-size: 15px;">
+                <i class="fa fa-check"></i> XÁC NHẬN LƯU
+            </button>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        var gioHang = [];
+
+        $(document).ready(function () {
+            // Thanh tìm kiếm cho select box
+            $('#khachHangSelect').select2({ placeholder: "Tìm khách nhanh...", allowClear: true });
+
+            // Khởi tạo select2 cho Nhân viên phục vụ
+            $('#nhanVienSelect').select2({ placeholder: "Tìm nhân viên...", allowClear: true });
+
+            $('#khachHangSelect').on('select2:select', function (e) {
+                $('#txtGiamGia').val($(e.params.data.element).data('giam'));
+                HienThiGioHang();
+            });
+
+            $(document).on('click', '.btn-chon-mon', function () {
+                var id = $(this).data('id');
+                var m = gioHang.find(x => x.MaSP === id);
+                if (m) { m.SoLuong++; }
+                else { gioHang.push({ MaSP: id, TenSP: $(this).data('ten'), DonGia: parseFloat($(this).data('gia')), SoLuong: 1 }); }
+                HienThiGioHang();
+            });
+
+            $('#txtSearchMon').on('keyup', function() {
+                var val = $(this).val().toLowerCase();
+                $("#danhSachMonAn .item-mon").filter(function() { $(this).toggle($(this).data('ten').indexOf(val) > -1); });
+            });
+
+            $('#txtGiamGia').on('input', HienThiGioHang);
+        });
+
+        function DoiSoLuong(id, step) {
+            var m = gioHang.find(x => x.MaSP === id);
+            if (m) {
+                m.SoLuong += step;
+                if (m.SoLuong <= 0) XoaMon(id);
+            }
+            HienThiGioHang();
+        }
+
+        function XoaMon(id) {
+            gioHang = gioHang.filter(x => x.MaSP !== id);
+            HienThiGioHang();
+        }
+
+        function HuyDon() {
+            if (confirm("Làm mới giỏ hàng?")) { gioHang = []; HienThiGioHang(); }
+        }
+
+        function HienThiGioHang() {
+            var html = '', thanhTien = 0;
+            gioHang.forEach(item => {
+                var tt = item.SoLuong * item.DonGia;
+                thanhTien += tt;
+                html += `<tr>
+                            <td>${item.TenSP}</td>
+                            <td class="text-center">
+                                <button class="btn btn-xs btn-default qty-btn" onclick="DoiSoLuong('${item.MaSP}', -1)">-</button>
+                                <strong>${item.SoLuong}</strong>
+                                <button class="btn btn-xs btn-default qty-btn" onclick="DoiSoLuong('${item.MaSP}', 1)">+</button>
+                            </td>
+                            <td class="text-right">${tt.toLocaleString('vi-VN')}</td>
+                            <td class="text-center"><i class="fa fa-times btn-delete-item" onclick="XoaMon('${item.MaSP}')"></i></td>
+                         </tr>`;
+            });
+            var pt = parseFloat($('#txtGiamGia').val()) || 0;
+            var giam = (thanhTien * pt) / 100;
+            $('#chiTietGioHang').html(html);
+            $('#lblThanhTien').text(thanhTien.toLocaleString('vi-VN'));
+            $('#lblTienGiam').text(giam.toLocaleString('vi-VN'));
+            $('#tongTienBill').text((thanhTien - giam).toLocaleString('vi-VN'));
+        }
+
+        // =====================================
+        // MỞ POPUP XÁC NHẬN BILL & HIỆN QR
+        // =====================================
+        function HienThiXacNhanBill() {
+            // 1. Kiểm tra giỏ hàng
+            if (gioHang.length === 0) {
+                alert("Giỏ hàng đang trống, không có gì để thanh toán!");
+                return;
+            }
+
+            // 2. Chặn lại nếu chưa chọn nhân viên phục vụ
+            var maNV = $('#nhanVienSelect').val();
+            if (!maNV || maNV === "") {
+                alert("⚠️ Vui lòng chọn Nhân viên phục vụ trước khi thanh toán!");
+                $('#nhanVienSelect').select2('open'); // Tự động mở cái ô chọn cho thu ngân
+                return;
+            }
+
+            // Lấy TÊN của nhân viên từ ô Select để in lên Hóa đơn
+            var tenNV = $('#nhanVienSelect option:selected').text();
+            $('#billXacNhanNhanVien').text(tenNV);
+
+            var tongThuText = $('#tongTienBill').text();
+            var tongThuNum = tongThuText.replace(/\,/g, '').replace(/\./g, '');
+
+            // Đổ dữ liệu món ăn vào bảng Popup
+            var h = '';
+            gioHang.forEach(i => {
+                h += `<tr>
+                        <td>${i.TenSP}</td>
+                        <td align="center">${i.SoLuong}</td>
+                        <td align="right">${(i.SoLuong * i.DonGia).toLocaleString('vi-VN')}</td>
+                      </tr>`;
+            });
+            $('#billXacNhanBody').html(h);
+            $('#billXacNhanTamTinh').text($('#lblThanhTien').text());
+            $('#billXacNhanGiam').text($('#txtGiamGia').val());
+            $('#billXacNhanTongTien').text(tongThuText);
+
+            // Tạo mã QR động từ VietQR
+            var qrUrl = `https://img.vietqr.io/image/MB-0965574552-compact.png?amount=${tongThuNum}&addInfo=Thanh toan nuoc`;
+            $('#imgQRBillXacNhan').attr('src', qrUrl);
+
+            // Hiện Popup
+            $('#modalXacNhanBill').fadeIn(200);
+        }
+
+        function DongModalBill() {
+            $('#modalXacNhanBill').fadeOut(200);
+        }
+
+        // =====================================
+        // LƯU DB KHI BẤM XÁC NHẬN
+        // =====================================
+        function XuLyThanhToan() {
+            var tongThuText = $('#tongTienBill').text().replace(/\,/g, '').replace(/\./g, '');
+            var tongThuNum = parseFloat(tongThuText);
+
+            // GÓI GỌN MÃ NHÂN VIÊN ĐỂ GỬI LÊN SERVER
+            var dataToSend = {
+                maKH: $('#khachHangSelect').val(),
+                maNV: $('#nhanVienSelect').val(), // Đã lấy được mã NV
+                gioHang: gioHang,
+                tongThu: tongThuNum,
+                maBan: @(ViewBag.MaBan ?? 0)
+            };
+
+            // Vô hiệu hóa nút để tránh thu ngân bấm 2 lần
+            $('.btn-success').prop('disabled', true);
+
+            $.ajax({
+                url: '@Url.Action("ThanhToanBill", "POS")',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(dataToSend),
+                success: function (res) {
+                    if (res.success) {
+                        alert("✅ Đã lưu hóa đơn thành công!");
+                        window.location.href = '@Url.Action("LichSu", "HoaDon")';
+                    } else {
+                        alert("❌ Lỗi từ hệ thống: " + res.message);
+                        $('.btn-success').prop('disabled', false);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("Chi tiết lỗi:", xhr.responseText);
+                    alert("⚠️ Lỗi kết nối! Vui lòng kiểm tra lại mạng.");
+                    $('.btn-success').prop('disabled', false);
+                }
+            });
+        }
+    </script>
+}

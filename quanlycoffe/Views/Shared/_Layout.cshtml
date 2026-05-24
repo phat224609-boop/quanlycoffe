@@ -125,7 +125,7 @@
                 </div>
 
                 <a href="@Url.Action("Index", "KhachHang")">Khách hàng</a>
-                <a href="#">Khuyến mãi</a>
+                /*<a href="#">Khuyến mãi</a>*/
                 <a href="@Url.Action("Index", "SanPham")">Hàng hóa</a>
 
                 <a href="@Url.Action("LichSu", "HoaDon")" style="color: #f1c40f;">
@@ -139,7 +139,11 @@
                     <a href="@Url.Action("DSTaiKhoan", "HeThong")">Quản lý tài khoản</a>
                 }
 
-                <a href="#">Báo cáo</a>
+                <li>
+                    <a href="@Url.Action("DoanhThu", "ThongKe")">
+                        Báo Cáo
+                    </a>
+                </li>
 
                 <span style="color: #777; margin: 0 10px;">|</span>
                 <span style="color: white;">Chào, <b style="color: #f39c12;">@Session["LoginName"]</b></span>
@@ -161,11 +165,13 @@
         <p>&copy; @DateTime.Now.Year - Nền tảng quản lý vận hành chuyên nghiệp Pro Coffee System - Leader: <b>@Session["LoginName"]</b></p>
     </footer>
 
-    @* --- THỨ TỰ SCRIPTS: JQUERY -> BOOTSTRAP -> SELECT2 --- *@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 
-    @* --- BƯỚC 1: THÊM JS SELECT2 --- *@
+    <script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     @RenderSection("scripts", required: false)

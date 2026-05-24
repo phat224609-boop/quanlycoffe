@@ -1,0 +1,796 @@
+﻿@model quanlycoffe.Models.View1Models.ThongKeViewModel
+
+@{
+    ViewBag.Title = "Báo Cáo Thống Kê Doanh Thu";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+
+
+    var sapHetHang =
+ViewBag.DanhSachSapHetHang
+as List<quanlycoffe.Models.SanPham>;
+}
+
+<style>
+
+    .dashboard-card {
+        border-radius: 10px;
+        padding: 20px;
+        color: white;
+        margin-bottom: 20px;
+    }
+
+    .card-green {
+        background: #28a745;
+    }
+
+    .card-blue {
+        background: #007bff;
+    }
+
+    .panel {
+        border-radius: 8px;
+    }
+
+    .btn-group {
+        flex-wrap: wrap;
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+    }
+</style>
+
+<div class="container-fluid"
+     style="padding:20px; background:#f8f9fa;">
+
+    <h2 class="text-center text-primary"
+        style="font-weight:bold; margin-bottom:25px;">
+
+        HỆ THỐNG BÁO CÁO THỐNG KÊ DOANH THU & KHO HÀNG
+
+    </h2>
+
+    <!-- FILTER -->
+    <div class="panel panel-default"
+         style="box-shadow:0 2px 4px rgba(0,0,0,0.08);">
+
+        <div class="panel-body">
+
+            <form method="get"
+                  action="@Url.Action("DoanhThu","ThongKe")"
+                  id="formThongKe">
+
+                <input type="hidden"
+                       name="loaiLoc"
+                       id="loaiLoc"
+                       value="@ViewBag.LoaiLoc" />
+
+                <!-- TAB NHANH -->
+                <div class="text-center"
+                     style="margin-bottom:15px;">
+
+                    <div class="btn-group">
+
+                        <button type="button"
+                                class="btn btn-default quick-btn"
+                                onclick="chonNhanh('homnay', this)">
+
+                            Hôm nay
+
+                        </button>
+
+                        <button type="button"
+                                class="btn btn-default quick-btn"
+                                onclick="chonNhanh('homqua', this)">
+
+                            Hôm qua
+
+                        </button>
+
+                        <button type="button"
+                                class="btn btn-default quick-btn"
+                                onclick="chonNhanh('7ngay', this)">
+
+                            7 ngày trước
+
+                        </button>
+
+                        <button type="button"
+                                class="btn btn-default quick-btn"
+                                onclick="chonNhanh('tuychon', this)">
+
+                            Tùy chỉnh
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+                <!-- TÙY CHỈNH -->
+                <div id="khuTuyChinh"
+                     style="display:none; margin-top:20px;">
+
+                    <!-- TAB CON -->
+                    <div class="text-center"
+                         style="margin-bottom:15px;">
+
+                        <div class="btn-group">
+
+                            <button type="button"
+                                    class="btn btn-info custom-btn active"
+                                    onclick="chonLoai('range', this)">
+
+                                Khoảng ngày
+
+                            </button>
+
+                            <button type="button"
+                                    class="btn btn-default custom-btn"
+                                    onclick="chonLoai('ngay', this)">
+
+                                Ngày
+
+                            </button>
+
+                            <button type="button"
+                                    class="btn btn-default custom-btn"
+                                    onclick="chonLoai('tuan', this)">
+
+                                Tuần
+
+                            </button>
+
+                            <button type="button"
+                                    class="btn btn-default custom-btn"
+                                    onclick="chonLoai('thang', this)">
+
+                                Tháng
+
+                            </button>
+
+                            <button type="button"
+                                    class="btn btn-default custom-btn"
+                                    onclick="chonLoai('nam', this)">
+
+                                Năm
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                    <!-- RANGE -->
+                    <div id="box-range"
+                         class="box-custom text-center">
+
+                        <input type="text"
+                               id="dateRange"
+                               name="dateRange"
+                               class="form-control"
+                               style="width:280px; display:inline-block;" />
+
+                    </div>
+
+                    <!-- NGÀY -->
+                    <div id="box-ngay"
+                         class="box-custom text-center"
+                         style="display:none;">
+
+                        <input type="date"
+                               id="inputNgay"
+                               max="@DateTime.Today.ToString("yyyy-MM-dd")"
+                               class="form-control"
+                               style="width:250px; display:inline-block;" />
+
+                    </div>
+
+                    <!-- TUẦN -->
+                    <div id="box-tuan"
+                         class="box-custom text-center"
+                         style="display:none;">
+
+                        <input type="date"
+                               id="inputTuan"
+                               max="@DateTime.Today.ToString("yyyy-MM-dd")"
+                               class="form-control"
+                               style="width:250px; display:inline-block;" />
+
+                        <p class="text-muted"
+                           style="margin-top:5px;">
+
+                            Chọn bất kỳ ngày nào trong tuần
+
+                        </p>
+
+                    </div>
+
+                    <!-- THÁNG -->
+                    <div id="box-thang"
+                         class="box-custom text-center"
+                         style="display:none;">
+
+                        <input type="month"
+                               id="inputThang"
+                               max="@DateTime.Today.ToString("yyyy-MM")"
+                               class="form-control"
+                               style="width:250px; display:inline-block;" />
+
+                    </div>
+
+                    <!-- NĂM -->
+                    <div id="box-nam"
+                         class="box-custom text-center"
+                         style="display:none;">
+
+                        <select id="inputNam"
+                                class="form-control"
+                                style="width:250px; display:inline-block;">
+
+                            @for (int y = DateTime.Today.Year; y >= 2020; y--)
+                            {
+                                <option value="@y">@y</option>
+                            }
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+                <!-- HIDDEN -->
+                <input type="hidden"
+                       name="tuNgay"
+                       id="tuNgay" />
+
+                <input type="hidden"
+                       name="denNgay"
+                       id="denNgay" />
+
+                <!-- BUTTON -->
+                <div class="text-center"
+                     style="margin-top:20px; display:none;"
+                     id="btnLoc">
+
+                    <button type="submit"
+                            class="btn btn-success btn-lg">
+
+                        Lọc Dữ Liệu
+
+                    </button>
+
+                </div>
+
+                <!-- EXPORT -->
+                <div class="text-center"
+                     style="margin-top:15px;">
+
+                    <!-- EXCEL -->
+                    <a href="@Url.Action("XuatExcel",
+        "ThongKe",
+        new {
+            tuNgay = Model.TuNgay.ToString("yyyy-MM-dd"),
+            denNgay = Model.DenNgay.ToString("yyyy-MM-dd")
+        })"
+                       class="btn btn-success">
+
+                        <i class="glyphicon glyphicon-download-alt"></i>
+                        Xuất Excel
+                    </a>
+
+                    <a href="@Url.Action("XuatPDF",
+        "ThongKe",
+        new {
+            tuNgay = Model.TuNgay.ToString("yyyy-MM-dd"),
+            denNgay = Model.DenNgay.ToString("yyyy-MM-dd")
+        })"
+                       class="btn btn-danger">
+
+                        <i class="glyphicon glyphicon-file"></i>
+                        Xuất PDF
+                    </a>
+
+
+
+                    <!-- PRINT -->
+                    <button type="button"
+                            onclick="window.print()"
+                            class="btn btn-primary">
+
+                        <i class="glyphicon glyphicon-print"></i>
+
+                        In Báo Cáo
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    <!-- CARD -->
+    <div class="row"
+         style="margin-bottom:20px; margin-top:20px;">
+
+        <div class="col-md-6">
+
+            <div class="dashboard-card card-green">
+
+                <h4>TỔNG DOANH THU</h4>
+
+                <h2 style="font-weight:bold;">
+
+                    @string.Format("{0:N0}",
+                        @Model.TongDoanhThu) VNĐ
+
+                </h2>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-6">
+
+            <div class="dashboard-card card-blue">
+
+                <h4>TỔNG HÓA ĐƠN</h4>
+
+                <h2 style="font-weight:bold;">
+
+                    @Model.TongHoaDon
+
+                </h2>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- TABLE -->
+    <div class="row">
+
+        <!-- HÓA ĐƠN -->
+        <div class="col-md-7">
+
+            <div class="panel panel-default">
+
+                <div class="panel-heading"
+                     style="font-weight:bold;">
+
+                    Nhật Ký Hóa Đơn
+
+                </div>
+
+                <div class="table-responsive"
+                     style="max-height:400px; overflow-y:auto;">
+
+                    <table class="table table-striped table-hover">
+
+                        <thead>
+
+                            <tr>
+
+                                <th>Mã HD</th>
+
+                                <th>Ngày Bán</th>
+
+                                <th>Tổng Thu</th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            @if (Model.HoaDons != null && Model.HoaDons.Any())
+                            {
+                                foreach (var item in Model.HoaDons)
+                                {
+                                    <tr>
+
+                                        <td>#@item.MaHD</td>
+
+                                        <td>
+                                            @string.Format("{0:dd/MM/yyyy HH:mm}",
+                                                item.NgayBan)
+                                        </td>
+
+                                        <td style="color:red; font-weight:bold;">
+
+                                            @string.Format("{0:N0}",
+                                                item.TongThu) đ
+
+                                        </td>
+
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+
+                                    <td colspan="3"
+                                        class="text-center text-muted">
+
+                                        Không có dữ liệu
+
+                                    </td>
+
+                                </tr>
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- RIGHT -->
+        <div class="col-md-5">
+
+            <!-- TOP BÁN CHẠY -->
+            <div class="panel panel-default"
+                 style="margin-bottom:20px;">
+
+                <div class="panel-heading"
+                     style="font-weight:bold;
+                            background:#ffeeba;">
+
+                    Top 5 Sản Phẩm Bán Chạy
+
+                </div>
+
+                <table class="table table-hover">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Tên</th>
+
+                            <th>SL</th>
+
+                            <th>Doanh Thu</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        @if (Model.TopSanPham != null && Model.TopSanPham.Any())
+                        {
+                            foreach (var sp in Model.TopSanPham)
+                            {
+                                <tr>
+
+                                    <td>@sp.TenSanPham</td>
+
+                                    <td>
+
+                                        @string.Format("{0:0.##}",
+                                            sp.SoLuongBan)
+
+                                    </td>
+
+                                    <td>
+
+                                        @string.Format("{0:N0}",
+                                            sp.DoanhThu) đ
+
+                                    </td>
+
+                                </tr>
+                            }
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            <!-- KHO -->
+            <div class="panel panel-danger">
+
+                <div class="panel-heading"
+                     style="font-weight:bold;">
+
+                    Sản Phẩm Sắp Hết Hàng
+
+                </div>
+
+                <table class="table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Tên</th>
+
+                            <th>Tồn Kho</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        @if (sapHetHang != null && sapHetHang.Any())
+                        {
+                            foreach (var sp in sapHetHang)
+                            {
+                                <tr>
+
+                                    <td>@sp.TenSP</td>
+
+                                    <td style="color:red;
+                                               font-weight:bold;">
+
+                                        @sp.SoLuongTrongKho
+
+                                    </td>
+
+                                </tr>
+                            }
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+        </div>
+
+    </div>
+    <div class="panel panel-default">
+
+        <div class="panel-heading"
+             style="font-weight:bold;">
+
+            <i class="glyphicon glyphicon-stats"></i>
+
+            Biểu Đồ Doanh Thu
+
+        </div>
+
+        <div class="panel-body">
+
+            <canvas id="chartDoanhThu"
+                    height="100"></canvas>
+
+        </div>
+
+    </div>
+</div>
+
+<link rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+
+
+    // TAB NHANH
+    function chonNhanh(loai, btn) {
+
+        $('.quick-btn')
+            .removeClass('btn-primary active')
+            .addClass('btn-default');
+
+        $(btn)
+            .removeClass('btn-default')
+            .addClass('btn-primary active');
+
+        $('#khuTuyChinh').hide();
+
+        $('#btnLoc').hide();
+
+        var today = moment();
+
+        if (loai === 'homnay') {
+
+            $('#loaiLoc').val('homnay');
+
+            $('#tuNgay').val(today.format('YYYY-MM-DD'));
+
+            $('#denNgay').val(today.format('YYYY-MM-DD'));
+
+            $('#formThongKe').submit();
+        }
+
+        else if (loai === 'homqua') {
+
+            var yesterday = moment().subtract(1, 'days');
+
+            $('#loaiLoc').val('homqua');
+
+            $('#tuNgay').val(yesterday.format('YYYY-MM-DD'));
+
+            $('#denNgay').val(yesterday.format('YYYY-MM-DD'));
+
+            $('#formThongKe').submit();
+        }
+
+        else if (loai === '7ngay') {
+
+            $('#loaiLoc').val('7ngay');
+
+            $('#tuNgay').val(
+                moment().subtract(6, 'days').format('YYYY-MM-DD')
+            );
+
+            $('#denNgay').val(today.format('YYYY-MM-DD'));
+
+            $('#formThongKe').submit();
+        }
+
+        else if (loai === 'tuychon') {
+
+            $('#loaiLoc').val('tuychon');
+
+            $('#khuTuyChinh').show();
+
+            $('#btnLoc').show();
+        }
+    }
+
+    // TAB CON
+    function chonLoai(loai, btn) {
+
+        $('.custom-btn')
+            .removeClass('btn-info active')
+            .addClass('btn-default');
+
+        $(btn)
+            .removeClass('btn-default')
+            .addClass('btn-info active');
+
+        $('.box-custom').hide();
+
+        $('#box-' + loai).show();
+    }
+
+    // SUBMIT FORM
+    $('#formThongKe').submit(function () {
+
+        if ($('#box-range').is(':visible')) {
+
+            var picker =
+                $('#dateRange').data('daterangepicker');
+
+            $('#tuNgay').val(
+                picker.startDate.format('YYYY-MM-DD')
+            );
+
+            $('#denNgay').val(
+                picker.endDate.format('YYYY-MM-DD')
+            );
+        }
+
+        else if ($('#box-ngay').is(':visible')) {
+
+            var d = $('#inputNgay').val();
+
+            $('#tuNgay').val(d);
+
+            $('#denNgay').val(d);
+        }
+
+        else if ($('#box-tuan').is(':visible')) {
+
+            var d = moment($('#inputTuan').val());
+
+            $('#tuNgay').val(
+                d.startOf('isoWeek').format('YYYY-MM-DD')
+            );
+
+            $('#denNgay').val(
+                d.endOf('isoWeek').format('YYYY-MM-DD')
+            );
+        }
+
+        else if ($('#box-thang').is(':visible')) {
+
+            var d = moment($('#inputThang').val());
+
+            $('#tuNgay').val(
+                d.startOf('month').format('YYYY-MM-DD')
+            );
+
+            $('#denNgay').val(
+                d.endOf('month').format('YYYY-MM-DD')
+            );
+        }
+
+        else if ($('#box-nam').is(':visible')) {
+
+            var year = $('#inputNam').val();
+
+            $('#tuNgay').val(year + '-01-01');
+
+            $('#denNgay').val(year + '-12-31');
+        }
+
+    });
+
+    $(document).ready(function () {
+    $('#dateRange').daterangepicker({
+        opens: 'center',
+        autoUpdateInput: true,
+        maxDate: moment(),
+        startDate: moment('@(Model.TuNgay.ToString("yyyy-MM-dd"))', 'YYYY-MM-DD'),
+        endDate: moment('@(Model.DenNgay.ToString("yyyy-MM-dd"))', 'YYYY-MM-DD'),
+        locale: {
+            format: 'DD/MM/YYYY',
+            applyLabel: 'Áp dụng',
+            cancelLabel: 'Hủy'
+        }
+    });
+});
+
+
+    // CHART
+    var ctx = document.getElementById('chartDoanhThu');
+
+    if (ctx) {
+
+        new Chart(ctx, {
+
+            type: 'line',
+
+            data: {
+
+                labels: @Html.Raw(ViewBag.ChartLabels ?? "[]"),
+
+                datasets: [{
+
+                    label: 'Doanh Thu',
+
+                    data: @Html.Raw(ViewBag.ChartData ?? "[]"),
+
+                    borderWidth: 3,
+
+                    fill: false,
+
+                    tension: 0.3
+
+                }]
+            },
+
+            options: {
+
+                responsive: true,
+
+                plugins: {
+
+                    legend: {
+                        display: true
+                    }
+                }
+            }
+        });
+    }
+
+</script>

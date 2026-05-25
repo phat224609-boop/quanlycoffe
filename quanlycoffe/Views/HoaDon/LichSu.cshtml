@@ -26,7 +26,9 @@
                     <tr>
                         <td><b>@item.MaHD</b></td>
                         <td>@item.NgayBan.ToString("dd/MM/yyyy HH:mm")</td>
-                        <td>@(item.MaBan == null ? "Mang đi" : "Bàn " + item.MaBan)</td>
+
+                        <td>@(item.MaBan == null ? "Mang đi" : (item.plp_Ban != null ? item.plp_Ban.TenBan : "Bàn " + item.MaBan))</td>
+
                         <td class="text-right text-danger"><b>@string.Format("{0:N0}", item.TongThu) đ</b></td>
                         <td class="text-center">
                             @if (item.DaThanhToan == 0)
@@ -44,12 +46,18 @@
                                     <i class="fa fa-eye"></i> Chi tiết
                                 </button>
 
-                                <button type="button" class="btn btn-xs btn-success" onclick="UpdateSTT('@item.MaHD', 1)">
-                                    <i class="fa fa-check"></i> Đã trả tiền
-                                </button>
-                                <button type="button" class="btn btn-xs btn-default" onclick="UpdateSTT('@item.MaHD', 0)">
-                                    <i class="fa fa-clock-o"></i> Chờ lại
-                                </button>
+                                @if (item.DaThanhToan == 0)
+                                {
+                                    <button type="button" class="btn btn-xs btn-success" onclick="UpdateSTT('@item.MaHD', 1)" title="Xác nhận đã nhận tiền">
+                                        <i class="fa fa-money"></i> Thu tiền
+                                    </button>
+                                }
+                                else
+                                {
+                                    <button type="button" class="btn btn-xs btn-warning" onclick="UpdateSTT('@item.MaHD', 0)" title="Chuyển về trạng thái chờ">
+                                        <i class="fa fa-undo"></i> Hủy thu
+                                    </button>
+                                }
                             </div>
                         </td>
                     </tr>
@@ -146,11 +154,11 @@
                         } else {
                             res.data.forEach(function (item) {
                                 html += `<tr>
-                                                    <td style="font-weight:bold;">${item.TenSP}</td>
-                                                    <td class="text-center">${item.SoLuong}</td>
-                                                    <td class="text-right">${item.DonGia.toLocaleString('vi-VN')}đ</td>
-                                                    <td class="text-right text-danger" style="font-weight:bold;">${item.ThanhTien.toLocaleString('vi-VN')}đ</td>
-                                                 </tr>`;
+                                                        <td style="font-weight:bold;">${item.TenSP}</td>
+                                                        <td class="text-center">${item.SoLuong}</td>
+                                                        <td class="text-right">${item.DonGia.toLocaleString('vi-VN')}đ</td>
+                                                        <td class="text-right text-danger" style="font-weight:bold;">${item.ThanhTien.toLocaleString('vi-VN')}đ</td>
+                                                     </tr>`;
                             });
                         }
                         $('#chiTietBody').html(html);
@@ -173,7 +181,9 @@
 
         // Cập nhật trạng thái
         function UpdateSTT(id, val) {
-            if (!confirm("Thay đổi trạng thái hóa đơn này?")) return;
+            var msg = val === 1 ? "Xác nhận ĐÃ THU TIỀN cho hóa đơn này?" : "Hủy thu tiền, chuyển hóa đơn về ĐANG CHỜ?";
+            if (!confirm(msg)) return;
+
             $.ajax({
                 url: '/HoaDon/CapNhatTrangThai',
                 type: 'POST',

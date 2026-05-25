@@ -129,17 +129,22 @@
 
                 <div class="row">
                     <div class="col-md-6 form-group">
-                        <label><i class="fa fa-user"></i> Khách Hàng:</label>
-                        <select id="khachHangSelect" class="form-control" style="width:100%">
-                            <option value="" data-giam="0">-- Khách Vãng Lai --</option>
-                            @if (ViewBag.DSKhachHang != null)
-                            {
-                                foreach (quanlycoffe.Controllers.KhachHangViewModel kh in (IEnumerable<quanlycoffe.Controllers.KhachHangViewModel>)ViewBag.DSKhachHang)
+                        <label><i class="fa fa-user"></i> Khách Hàng <span class="text-danger">*</span>:</label>
+                        <div class="input-group">
+                            <select id="khachHangSelect" class="form-control" style="width:100%">
+                                <option value="" data-giam="0">-- Chọn khách hàng --</option>
+                                @if (ViewBag.DSKhachHang != null)
                                 {
-                                    <option value="@kh.MaKH" data-giam="@kh.GiamGia">@kh.TenKH (@kh.TenHang)</option>
+                                    foreach (quanlycoffe.Controllers.KhachHangViewModel kh in (IEnumerable<quanlycoffe.Controllers.KhachHangViewModel>)ViewBag.DSKhachHang)
+                                    {
+                                        <option value="@kh.MaKH" data-giam="@kh.GiamGia">@kh.TenKH (@kh.TenHang)</option>
+                                    }
                                 }
-                            }
-                        </select>
+                            </select>
+                            <span class="input-group-btn">
+                                <button class="btn btn-primary" type="button" onclick="$('#modalThemKH').fadeIn(200);" title="Thêm khách mới" style="height: 34px;"><i class="fa fa-plus"></i></button>
+                            </span>
+                        </div>
                     </div>
 
                     <div class="col-md-6 form-group">
@@ -249,6 +254,24 @@
     </div>
 </div>
 
+<div id="modalThemKH" style="display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); overflow: auto;">
+    <div style="background-color: #fff; margin: 10% auto; width: 400px; max-width: 90%; padding: 20px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); animation: popIn 0.3s ease;">
+        <h4 style="margin-top:0; font-weight: bold; border-bottom: 1px solid #eee; padding-bottom: 10px;"><i class="fa fa-user-plus"></i> Thêm Khách Hàng Mới</h4>
+        <div class="form-group" style="margin-top: 15px;">
+            <label>Tên khách hàng (<span class="text-danger">*</span>):</label>
+            <input type="text" id="txtTenKHMoi" class="form-control" placeholder="Nhập tên khách...">
+        </div>
+        <div class="form-group">
+            <label>Số điện thoại (<span class="text-danger">*</span>):</label>
+            <input type="text" id="txtSdtKHMoi" class="form-control" placeholder="Nhập số điện thoại...">
+        </div>
+        <div style="text-align: right; margin-top: 25px; border-top: 1px solid #eee; padding-top: 15px;">
+            <button type="button" class="btn btn-default" onclick="$('#modalThemKH').fadeOut(200);">Hủy</button>
+            <button type="button" class="btn btn-success" onclick="LuuKhachHangNhanh()"><i class="fa fa-save"></i> Lưu Khách</button>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     <script>
         var gioHang = [];
@@ -333,11 +356,19 @@
                 return;
             }
 
-            // 2. Chặn lại nếu chưa chọn nhân viên phục vụ
+            // 2. Chặn nếu chưa chọn khách hàng
+            var maKH = $('#khachHangSelect').val();
+            if (!maKH || maKH === "") {
+                alert("⚠️ BẮT BUỘC: Vui lòng chọn Khách Hàng hoặc bấm nút dấu (+) để Thêm Mới!");
+                $('#khachHangSelect').select2('open');
+                return;
+            }
+
+            // 3. Chặn lại nếu chưa chọn nhân viên phục vụ
             var maNV = $('#nhanVienSelect').val();
             if (!maNV || maNV === "") {
                 alert("⚠️ Vui lòng chọn Nhân viên phục vụ trước khi thanh toán!");
-                $('#nhanVienSelect').select2('open'); // Tự động mở cái ô chọn cho thu ngân
+                $('#nhanVienSelect').select2('open');
                 return;
             }
 
@@ -375,6 +406,44 @@
         }
 
         // =====================================
+        // LƯU KHÁCH HÀNG NHANH BẰNG AJAX
+        // =====================================
+        function LuuKhachHangNhanh() {
+            var ten = $('#txtTenKHMoi').val().trim();
+            var sdt = $('#txtSdtKHMoi').val().trim();
+
+            if(!ten || !sdt) {
+                alert("Vui lòng nhập đủ Tên và Số điện thoại!");
+                return;
+            }
+
+            $.ajax({
+                url: '/POS/ThemKhachHangNhanh',
+                type: 'POST',
+                data: { tenKH: ten, sdt: sdt },
+                success: function (res) {
+                    if (res.success) {
+                        alert("✅ Đã thêm khách hàng thành công!");
+
+                        // Tự động đẩy khách hàng mới vào Dropdown Select2 và chọn luôn
+                        var newOption = new Option(res.tenKH + " (Mới)", res.maKH, true, true);
+                        $('#khachHangSelect').append(newOption).trigger('change');
+
+                        // Đóng bảng và xóa trắng text
+                        $('#modalThemKH').fadeOut(200);
+                        $('#txtTenKHMoi').val('');
+                        $('#txtSdtKHMoi').val('');
+                    } else {
+                        alert("❌ Lỗi: " + res.message);
+                    }
+                },
+                error: function() {
+                    alert("⚠️ Lỗi mạng, không thể thêm khách hàng!");
+                }
+            });
+        }
+
+        // =====================================
         // LƯU DB KHI BẤM XÁC NHẬN
         // =====================================
         function XuLyThanhToan() {
@@ -403,8 +472,9 @@
                         alert("✅ Đã lưu hóa đơn thành công!");
                         window.location.href = '@Url.Action("LichSu", "HoaDon")';
                     } else {
-                        alert("❌ Lỗi từ hệ thống: " + res.message);
+                        alert("❌ " + res.message); // Hiển thị đúng câu báo lỗi: Bàn đã có khách
                         $('.btn-success').prop('disabled', false);
+                        $('#modalXacNhanBill').fadeOut(200); // Đóng popup lại để người dùng thấy lỗi
                     }
                 },
                 error: function (xhr, status, error) {

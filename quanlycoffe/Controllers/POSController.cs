@@ -75,7 +75,6 @@ namespace quanlycoffe.Controllers
         }
 
         [HttpPost]
-        // ĐÃ SỬA: Thêm 'int maNV' vào để hứng dữ liệu
         public ActionResult ThanhToanBill(string maKH, int maNV, List<CartItem> gioHang, decimal tongThu, int maBan)
         {
             using (var transaction = db.Database.BeginTransaction())
@@ -84,6 +83,16 @@ namespace quanlycoffe.Controllers
                 {
                     if (gioHang == null || gioHang.Count == 0)
                         return Json(new { success = false, message = "Giỏ hàng không có món nào!" });
+
+                    // ĐÃ SỬA: CHẶN KHÔNG CHO ORDER NẾU BÀN ĐANG CÓ KHÁCH (TrangThai == 1)
+                    if (maBan > 0)
+                    {
+                        var checkBan = db.plp_Ban.Find(maBan);
+                        if (checkBan != null && checkBan.TrangThai == 1)
+                        {
+                            return Json(new { success = false, message = $"Bàn '{checkBan.TenBan}' đang có khách! Vui lòng chọn bàn khác." });
+                        }
+                    }
 
                     // Lấy ID của người đang thu tiền (đăng nhập vào phần mềm) để lưu vết
                     int currentUserId = Session["UserID"] != null ? (int)Session["UserID"] : 1;
@@ -175,6 +184,51 @@ namespace quanlycoffe.Controllers
                     string msg = ex.InnerException != null ? (ex.InnerException.InnerException != null ? ex.InnerException.InnerException.Message : ex.InnerException.Message) : ex.Message;
                     return Json(new { success = false, message = "Lỗi hệ thống: " + msg });
                 }
+            }
+        }
+
+        // ==========================================
+        // TÍNH NĂNG MỚI: THÊM KHÁCH HÀNG NHANH
+        // ==========================================
+        [HttpPost]
+        public ActionResult ThemKhachHangNhanh(string tenKH, string sdt)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(tenKH) || string.IsNullOrEmpty(sdt))
+                {
+                    return Json(new { success = false, message = "Vui lòng nhập đủ tên và số điện thoại!" });
+                }
+
+                // Tạo mã khách hàng
+                string maKHMoi = "KH" + DateTime.Now.ToString("ddHHmmss");
+
+                // BỔ SUNG CÁC TRƯỜNG BẮT BUỘC ĐỂ KHÔNG BỊ LỖI DB
+                KhachHang kh = new KhachHang
+                {
+                    MaKH = maKHMoi,
+                    TenKH = tenKH,
+                    DienThoai = sdt,
+                    DiemTichLuy = 0,
+                    NgaySinh = new DateTime(1900, 1, 1), // Gán ngày sinh mặc định để tránh lỗi datetime
+                    TenCuaHang = "Khách lẻ",             // Gán giá trị mặc định
+                    DiaChi = "Chưa cập nhật",            // Gán giá trị mặc định
+                    MaKV = 1,                            // Cần thay bằng mã khu vực có thật trong bảng plp_KhuVuc
+                    MaNhomKH = 1                         // Cần thay bằng mã nhóm có thật trong bảng plp_NhomKH
+                };
+
+                db.KhachHang.Add(kh);
+                db.SaveChanges();
+
+                return Json(new { success = true, maKH = maKHMoi, tenKH = tenKH });
+            }
+            catch (Exception ex)
+            {
+                // Bóc tách lỗi chi tiết để bạn dễ sửa nếu còn thiếu cột nào
+                string msg = ex.InnerException != null
+                             ? (ex.InnerException.InnerException != null ? ex.InnerException.InnerException.Message : ex.InnerException.Message)
+                             : ex.Message;
+                return Json(new { success = false, message = "Lỗi SQL: " + msg });
             }
         }
 

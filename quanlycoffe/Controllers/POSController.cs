@@ -124,6 +124,37 @@ namespace quanlycoffe.Controllers
                     // B. Lưu chi tiết hóa đơn
                     foreach (var item in gioHang)
                     {
+                        // TÌM SẢN PHẨM
+                        var sanPham = db.SanPham.Find(item.MaSP);
+
+                        // KIỂM TRA TỒN KHO
+                        if (sanPham == null)
+                        {
+                            transaction.Rollback();
+
+                            return Json(new
+                            {
+                                success = false,
+                                message = "Không tìm thấy sản phẩm!"
+                            });
+                        }
+
+                        // ÉP TỒN KHO THÀNH SỐ NGUYÊN
+                        int tonKho = Convert.ToInt32(sanPham.SoLuongTrongKho);
+
+                        // KHÔNG ĐỦ HÀNG
+                        if (tonKho < item.SoLuong)
+                        {
+                            transaction.Rollback();
+
+                            return Json(new
+                            {
+                                success = false,
+                                message = "Sản phẩm '" + sanPham.TenSP + "' không đủ tồn kho!"
+                            });
+                        }
+
+                        // LƯU CHI TIẾT HÓA ĐƠN
                         db.CTHoaDonBH.Add(new CTHoaDonBH
                         {
                             MaHD = maHD,
@@ -133,6 +164,9 @@ namespace quanlycoffe.Controllers
                             ThanhTien = item.SoLuong * item.DonGia,
                             DVT = "Ly"
                         });
+
+                        // TRỪ KHO THEO SỐ NGUYÊN
+                        sanPham.SoLuongTrongKho = tonKho - item.SoLuong;
                     }
 
                     // C. Cập nhật trạng thái bàn thành ĐANG PHỤC VỤ (Màu đỏ)
